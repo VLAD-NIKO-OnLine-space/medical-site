@@ -1,6 +1,6 @@
 <?php
-$page['title'] = 'Главная — Название сайта';
-$page['description'] = 'Описание главной страницы.';
+$page['title'] = content('site')['home_title'];
+$page['description'] = content('site')['home_description'];
 ?>
 <?php require __DIR__ . '/../templates/hero.php'; ?>
 <?php require __DIR__ . '/../templates/questions.php'; ?>

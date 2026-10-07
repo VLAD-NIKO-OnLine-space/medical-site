@@ -16,6 +16,11 @@ if ($url === '/robots.txt') {
     exit(robots());
 }
 
+if ($url === '/admin' || str_starts_with($url, '/admin/')) {
+    require __DIR__ . '/../admin/admin.php';
+    exit;
+}
+
 $pages = pages();
 if (isset($pages[$url])) {
     exit(render($pages[$url], $url));

@@ -7,7 +7,7 @@ function copy_dir(string $from, string $to): void
 {
     foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($from, FilesystemIterator::SKIP_DOTS)) as $f) {
         $rel = substr($f->getPathname(), strlen($from) + 1);
-        if ($rel === 'index.php' || $rel === '.htaccess') {
+        if ($rel === 'index.php' || $rel === '.htaccess' || str_starts_with($rel, 'assets/admin/')) {
             continue;
         }
         @mkdir(dirname("$to/$rel"), 0755, true);
