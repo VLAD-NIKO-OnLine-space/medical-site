@@ -15,6 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap">
 <link rel="stylesheet" href="/assets/css/style.css">
+<script>document.documentElement.classList.add("js")</script>
 <script type="module" src="/assets/js/header.js"></script>
 <script type="module" src="/assets/js/icons.js"></script>
 </head>
