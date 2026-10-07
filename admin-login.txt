@@ -1,0 +1,6 @@
+Админка: /admin/   (локально: http://localhost:8000/admin/)
+Логин:   admin
+Пароль:  rt0qpiYACZKVyqoz
+
+Сменить пароль: php admin-user.php admin 'новый-пароль'
+(после смены обновите этот файл или удалите его)

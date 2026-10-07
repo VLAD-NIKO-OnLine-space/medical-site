@@ -1,0 +1,124 @@
+[Wed Oct  7 06:49:58 2026] PHP 8.3.6 Development Server (http://127.0.0.1:8000) started
+[Wed Oct  7 06:49:59 2026] 127.0.0.1:58328 Accepted
+[Wed Oct  7 06:49:59 2026] 127.0.0.1:58328 Closing
+[Wed Oct  7 06:49:59 2026] 127.0.0.1:58332 Accepted
+[Wed Oct  7 06:49:59 2026] 127.0.0.1:58332 Closing
+[Wed Oct  7 06:49:59 2026] 127.0.0.1:58348 Accepted
+[Wed Oct  7 06:49:59 2026] 127.0.0.1:58348 Closing
+[Wed Oct  7 06:49:59 2026] 127.0.0.1:58360 Accepted
+[Wed Oct  7 06:49:59 2026] 127.0.0.1:58360 [200]: GET /assets/css/style.css
+[Wed Oct  7 06:49:59 2026] 127.0.0.1:58360 Closing
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58368 Accepted
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58380 Accepted
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58368 Closing
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58384 Accepted
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58380 [200]: GET /assets/css/style.css
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58380 Closing
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58396 Accepted
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58410 Accepted
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58384 [200]: GET /assets/js/header.js
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58384 Closing
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58396 [200]: GET /assets/js/icons.js
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58410 [200]: GET /assets/img/hero-1672.avif
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58396 Closing
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58410 Closing
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58418 Accepted
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58418 [200]: GET /assets/js/vendor/morphicons/element.js
+[Wed Oct  7 06:50:05 2026] 127.0.0.1:58418 Closing
+[Wed Oct  7 06:50:06 2026] 127.0.0.1:58426 Accepted
+[Wed Oct  7 06:50:06 2026] 127.0.0.1:58426 [200]: GET /assets/js/vendor/morphicons/controller-CXZuwJ_M.js
+[Wed Oct  7 06:50:06 2026] 127.0.0.1:58426 Closing
+[Wed Oct  7 06:50:06 2026] 127.0.0.1:58434 Accepted
+[Wed Oct  7 06:50:06 2026] 127.0.0.1:58444 Accepted
+[Wed Oct  7 06:50:06 2026] 127.0.0.1:58448 Accepted
+[Wed Oct  7 06:50:06 2026] 127.0.0.1:58434 [200]: GET /assets/js/vendor/morphicons/spring-CFHloqPP.js
+[Wed Oct  7 06:50:06 2026] 127.0.0.1:58444 [200]: GET /assets/js/vendor/morphicons/normalize-CYnN3Npw.js
+[Wed Oct  7 06:50:06 2026] 127.0.0.1:58448 [200]: GET /assets/js/vendor/morphicons/dom.js
+[Wed Oct  7 06:50:06 2026] 127.0.0.1:58434 Closing
+[Wed Oct  7 06:50:06 2026] 127.0.0.1:58444 Closing
+[Wed Oct  7 06:50:06 2026] 127.0.0.1:58448 Closing
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:34954 Accepted
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:34970 Accepted
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:34954 Closing
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:34970 [200]: GET /assets/css/style.css
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:34970 Closing
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:34984 Accepted
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:34994 Accepted
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:35004 Accepted
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:34984 [200]: GET /assets/js/header.js
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:34994 [200]: GET /assets/js/icons.js
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:34984 Closing
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:34994 Closing
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:35004 [200]: GET /assets/img/hero-1672.avif
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:35004 Closing
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:35020 Accepted
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:35020 [200]: GET /assets/js/vendor/morphicons/element.js
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:35020 Closing
+[Wed Oct  7 06:50:15 2026] 127.0.0.1:35022 Accepted
+[Wed Oct  7 06:50:16 2026] 127.0.0.1:35022 [200]: GET /assets/js/vendor/morphicons/controller-CXZuwJ_M.js
+[Wed Oct  7 06:50:16 2026] 127.0.0.1:35022 Closing
+[Wed Oct  7 06:50:16 2026] 127.0.0.1:35038 Accepted
+[Wed Oct  7 06:50:16 2026] 127.0.0.1:35050 Accepted
+[Wed Oct  7 06:50:16 2026] 127.0.0.1:35062 Accepted
+[Wed Oct  7 06:50:16 2026] 127.0.0.1:35038 [200]: GET /assets/js/vendor/morphicons/spring-CFHloqPP.js
+[Wed Oct  7 06:50:16 2026] 127.0.0.1:35050 [200]: GET /assets/js/vendor/morphicons/normalize-CYnN3Npw.js
+[Wed Oct  7 06:50:16 2026] 127.0.0.1:35062 [200]: GET /assets/js/vendor/morphicons/dom.js
+[Wed Oct  7 06:50:16 2026] 127.0.0.1:35038 Closing
+[Wed Oct  7 06:50:16 2026] 127.0.0.1:35050 Closing
+[Wed Oct  7 06:50:16 2026] 127.0.0.1:35062 Closing
+[Wed Oct  7 06:50:22 2026] 127.0.0.1:57068 Accepted
+[Wed Oct  7 06:50:22 2026] 127.0.0.1:57070 Accepted
+[Wed Oct  7 06:50:22 2026] 127.0.0.1:57068 Closing
+[Wed Oct  7 06:50:22 2026] 127.0.0.1:57070 Closing
+[Wed Oct  7 06:50:22 2026] 127.0.0.1:57082 Accepted
+[Wed Oct  7 06:50:22 2026] 127.0.0.1:57082 [200]: GET /assets/admin/admin.css
+[Wed Oct  7 06:50:22 2026] 127.0.0.1:57082 Closing
+[Wed Oct  7 06:50:37 2026] 127.0.0.1:47006 Accepted
+[Wed Oct  7 06:50:37 2026] 127.0.0.1:47012 Accepted
+[Wed Oct  7 06:50:37 2026] 127.0.0.1:47006 Closing
+[Wed Oct  7 06:50:37 2026] 127.0.0.1:47012 Closing
+[Wed Oct  7 06:50:37 2026] 127.0.0.1:47026 Accepted
+[Wed Oct  7 06:50:37 2026] 127.0.0.1:47040 Accepted
+[Wed Oct  7 06:50:37 2026] 127.0.0.1:47026 [200]: GET /assets/admin/admin.css
+[Wed Oct  7 06:50:37 2026] 127.0.0.1:47026 Closing
+[Wed Oct  7 06:50:37 2026] 127.0.0.1:47040 [200]: GET /assets/admin/admin.js
+[Wed Oct  7 06:50:37 2026] 127.0.0.1:47040 Closing
+[Wed Oct  7 06:51:29 2026] 127.0.0.1:43928 Accepted
+[Wed Oct  7 06:51:29 2026] 127.0.0.1:43932 Accepted
+[Wed Oct  7 06:51:29 2026] 127.0.0.1:43928 Closing
+[Wed Oct  7 06:51:29 2026] 127.0.0.1:43932 Closing
+[Wed Oct  7 06:51:29 2026] 127.0.0.1:43946 Accepted
+[Wed Oct  7 06:51:29 2026] 127.0.0.1:43954 Accepted
+[Wed Oct  7 06:51:29 2026] 127.0.0.1:43946 [200]: GET /assets/admin/admin.css
+[Wed Oct  7 06:51:29 2026] 127.0.0.1:43946 Closing
+[Wed Oct  7 06:51:29 2026] 127.0.0.1:43954 [200]: GET /assets/admin/admin.js
+[Wed Oct  7 06:51:29 2026] 127.0.0.1:43954 Closing
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:43966 Accepted
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:43982 Accepted
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:43966 Closing
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:43982 [200]: GET /assets/css/style.css
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:43982 Closing
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:43996 Accepted
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:44010 Accepted
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:44012 Accepted
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:43996 [200]: GET /assets/js/header.js
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:43996 Closing
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:44010 [200]: GET /assets/js/icons.js
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:44012 [200]: GET /assets/img/hero-1672.avif
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:44010 Closing
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:44012 Closing
+[Wed Oct  7 06:51:33 2026] 127.0.0.1:44016 Accepted
+[Wed Oct  7 06:51:34 2026] 127.0.0.1:44016 [200]: GET /assets/js/vendor/morphicons/element.js
+[Wed Oct  7 06:51:34 2026] 127.0.0.1:44016 Closing
+[Wed Oct  7 06:51:34 2026] 127.0.0.1:44018 Accepted
+[Wed Oct  7 06:51:34 2026] 127.0.0.1:44018 [200]: GET /assets/js/vendor/morphicons/controller-CXZuwJ_M.js
+[Wed Oct  7 06:51:34 2026] 127.0.0.1:44018 Closing
+[Wed Oct  7 06:51:34 2026] 127.0.0.1:44022 Accepted
+[Wed Oct  7 06:51:34 2026] 127.0.0.1:44030 Accepted
+[Wed Oct  7 06:51:34 2026] 127.0.0.1:44034 Accepted
+[Wed Oct  7 06:51:34 2026] 127.0.0.1:44022 [200]: GET /assets/js/vendor/morphicons/spring-CFHloqPP.js
+[Wed Oct  7 06:51:34 2026] 127.0.0.1:44022 Closing
+[Wed Oct  7 06:51:34 2026] 127.0.0.1:44030 [200]: GET /assets/js/vendor/morphicons/normalize-CYnN3Npw.js
+[Wed Oct  7 06:51:34 2026] 127.0.0.1:44034 [200]: GET /assets/js/vendor/morphicons/dom.js
+[Wed Oct  7 06:51:34 2026] 127.0.0.1:44030 Closing
+[Wed Oct  7 06:51:34 2026] 127.0.0.1:44034 Closing
