@@ -77,7 +77,9 @@ function validate_field(array $f, mixed $v, string $name, array &$errors): mixed
         case 'url':
             $v = clean_text($v, 500, false) ?? '';
             if ($v === '') {
-                $errors[$name] = 'Укажите ссылку.';
+                if (empty($f['optional'])) {
+                    $errors[$name] = 'Укажите ссылку.';
+                }
             } elseif (!preg_match('~^(/|#|https?://|mailto:|tel:)\S*$~i', $v)) {
                 $errors[$name] = 'Ссылка должна начинаться с /, #, https://, mailto: или tel: и не содержать пробелов.';
             }

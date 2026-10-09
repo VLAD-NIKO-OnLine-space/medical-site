@@ -18,4 +18,5 @@
 <script>document.documentElement.classList.add("js")</script>
 <script type="module" src="/assets/js/header.js"></script>
 <script type="module" src="/assets/js/icons.js"></script>
+<script type="module" src="/assets/js/video.js"></script>
 </head>

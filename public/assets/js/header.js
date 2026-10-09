@@ -14,6 +14,7 @@ const closeD = burger.dataset.closeIcon;
 const setOpen = (open) => {
   if (open === header.classList.contains("is-menu-open")) return;
   header.classList.toggle("is-menu-open", open);
+  document.documentElement.classList.toggle("is-menu-open", open);
   burger.setAttribute("aria-expanded", String(open));
   burger.setAttribute("aria-label", open ? "Закрыть меню" : "Открыть меню");
   burgerIcon.morphTo?.(open ? closeD : openD);

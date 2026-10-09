@@ -29,6 +29,27 @@ function icon(string $name, string $hover = '', int $size = 20): string
     return '<morph-icon reduced-motion="user" data-hover="' . e($icons[$hover]) . '">' . $svg . '</morph-icon>';
 }
 
+/** Как показать видео по ссылке: ['file', src] для .mp4/.webm, иначе ['iframe', embed-src]; null — ссылки нет. */
+function video_embed(string $url): ?array
+{
+    if ($url === '') {
+        return null;
+    }
+    if (preg_match('~\.(mp4|webm|ogv)(\?.*)?$~i', $url)) {
+        return ['file', $url];
+    }
+    if (preg_match('~(?:youtube\.com/(?:watch\?(?:.*&)?v=|embed/|shorts/)|youtu\.be/)([\w-]{11})~', $url, $m)) {
+        return ['iframe', "https://www.youtube.com/embed/{$m[1]}?autoplay=1&rel=0"];
+    }
+    if (preg_match('~rutube\.ru/(?:video|play/embed)/([0-9a-f]{32})~i', $url, $m)) {
+        return ['iframe', "https://rutube.ru/play/embed/{$m[1]}?autoplay=1"];
+    }
+    if (preg_match('~(?:vk\.com|vkvideo\.ru)/video(-?\d+)_(\d+)~', $url, $m)) {
+        return ['iframe', "https://vkvideo.ru/video_ext.php?oid={$m[1]}&id={$m[2]}&autoplay=1"];
+    }
+    return ['iframe', $url];
+}
+
 function db(): PDO
 {
     static $pdo;

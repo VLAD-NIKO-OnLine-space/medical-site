@@ -7,12 +7,13 @@
 <span><?= e(content('site')['name']) ?></span>
 </a>
 <nav class="header__nav" id="site-menu" aria-label="Основное меню">
+<p class="header__menu-cap" style="--i: 0" aria-hidden="true">Меню</p>
 <ul class="header__menu">
-<?php foreach ($h['nav'] as $item): ?>
-<li><a href="<?= e($item['href']) ?>"<?= $item['href'] === $url ? ' aria-current="page"' : '' ?>><?= e($item['label']) ?></a></li>
+<?php foreach ($h['nav'] as $i => $item): ?>
+<li style="--i: <?= $i + 1 ?>"><a href="<?= e($item['href']) ?>"<?= $item['href'] === $url ? ' aria-current="page"' : '' ?>><?= e($item['label']) ?></a></li>
 <?php endforeach; ?>
 </ul>
-<a href="<?= e($h['button_href']) ?>" class="btn header__menu-cta"><?= icon($h['button_icon'], $h['button_icon_hover']) ?><?= e($h['button_text']) ?></a>
+<a href="<?= e($h['button_href']) ?>" class="btn header__menu-cta" style="--i: <?= count($h['nav']) + 1 ?>"><?= icon($h['button_icon'], $h['button_icon_hover']) ?><?= e($h['button_text']) ?></a>
 </nav>
 <a href="<?= e($h['button_href']) ?>" class="btn header__cta"><?= icon($h['button_icon'], $h['button_icon_hover']) ?><?= e($h['button_text']) ?></a>
 <button class="header__burger" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Открыть меню" data-burger data-close-icon="<?= e(icons()['x']) ?>"><morph-icon reduced-motion="user"><?= icon('menu', '', 22) ?></morph-icon></button>
