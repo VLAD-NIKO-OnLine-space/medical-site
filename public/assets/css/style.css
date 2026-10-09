@@ -1149,7 +1149,7 @@ html.is-menu-open {
   }
 
   .about__person {
-    margin-top: -56px;
+    margin: -56px 0 0;
     padding: 14px 18px 16px;
   }
 
