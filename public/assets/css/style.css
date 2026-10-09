@@ -1,4 +1,5 @@
 :root {
+  interpolate-size: allow-keywords;
   --container: 1640px;
   --gutter: 20px;
   --header-space: 110px;
@@ -113,7 +114,9 @@ morph-icon {
 @media (prefers-reduced-motion: reduce) {
   .header,
   .header::before,
-  .header__nav {
+  .header__nav,
+  .faq__item::details-content,
+  .faq__toggle {
     transition: none !important;
   }
 
@@ -890,19 +893,238 @@ html.is-menu-open {
   color: var(--text);
 }
 
-/* Подвал */
+/* Частые вопросы */
 
-.footer {
-  padding: 32px 0;
+.faq {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding: 120px 0 140px;
 }
 
-.footer ul {
+.faq::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 10%;
+  right: -240px;
+  width: 720px;
+  height: 720px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(63, 181, 140, 0.24), rgba(63, 181, 140, 0) 70%);
+}
+
+.faq__head {
+  margin-bottom: 48px;
+}
+
+.faq__head .section-title {
+  margin-bottom: 16px;
+}
+
+.faq__lead {
+  max-width: 640px;
+  margin: 0;
+  color: var(--muted);
+}
+
+/* вопросы без карточек: разделены тонкими линиями */
+.faq__list {
+  border-top: 1px solid rgba(20, 80, 60, 0.14);
+}
+
+.faq__item {
+  border-bottom: 1px solid rgba(20, 80, 60, 0.14);
+}
+
+/* плавное раскрытие ответа там, где браузер это умеет; в остальных — мгновенно */
+.faq__item::details-content {
+  block-size: 0;
+  overflow-y: clip;
+  transition:
+    block-size 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    content-visibility 0.35s allow-discrete;
+}
+
+.faq__item[open]::details-content {
+  block-size: auto;
+}
+
+.faq__question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 28px 0;
+  font-size: clamp(19px, 1.5vw, 23px);
+  font-weight: 600;
+  line-height: 1.35;
+  list-style: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.faq__title {
+  margin: 0;
+  font: inherit;
+  color: inherit;
+}
+
+.faq__question::-webkit-details-marker {
+  display: none;
+}
+
+.faq__question:hover,
+.faq__item[open] .faq__question {
+  color: var(--accent-dark);
+}
+
+.faq__question:focus-visible {
+  outline: 3px solid var(--accent-dark);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.faq__toggle {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--accent-dark);
+  background: rgba(63, 181, 140, 0.14);
+  transition:
+    color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.faq__question:hover .faq__toggle {
+  background: rgba(63, 181, 140, 0.24);
+}
+
+.faq__item[open] .faq__toggle {
+  color: var(--on-accent);
+  background: var(--accent);
+}
+
+.faq__answer {
+  padding: 0 64px 28px 0;
+}
+
+.faq__answer p {
+  max-width: 900px;
+  margin: 0 0 0.8em;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.faq__answer p:last-child {
+  margin-bottom: 0;
+}
+
+/* Подвал */
+
+/* белый на всю ширину экрана, прижат к низу без отступов */
+.footer {
+  background: #fff;
+  border-top: 1px solid rgba(20, 80, 60, 0.08);
+}
+
+.footer__panel {
+  padding: 56px 0 28px;
+}
+
+.footer__top {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px 64px;
+  padding-bottom: 36px;
+}
+
+.footer__brand {
+  max-width: 520px;
+}
+
+.footer__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.footer__logo-icon {
+  flex: none;
+  color: var(--accent-dark);
+}
+
+.footer__tagline {
+  margin: 16px 0 0;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 36px;
   margin: 0;
-  padding: 0;
+  padding: 6px 0 0;
   list-style: none;
+}
+
+.footer__links a {
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer__links a:hover {
+  color: var(--accent-dark);
+}
+
+.footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(20, 80, 60, 0.12);
+}
+
+.footer__bottom p {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.footer__bottom small {
+  display: block;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.footer__disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.footer__disclaimer svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--accent-dark);
 }
 
 /* Адаптив */
@@ -1146,6 +1368,48 @@ html.is-menu-open {
 
   .about {
     padding: 80px 0;
+  }
+
+  .faq {
+    padding: 72px 0 88px;
+  }
+
+  .footer__panel {
+    padding: 40px 0 24px;
+  }
+
+  .footer__top {
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 28px;
+  }
+
+  .footer__links {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .footer__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .faq__head {
+    margin-bottom: 32px;
+  }
+
+  .faq__question {
+    gap: 16px;
+    padding: 20px 0;
+  }
+
+  .faq__toggle {
+    width: 36px;
+    height: 36px;
+  }
+
+  .faq__answer {
+    padding: 0 0 22px;
   }
 
   .about__person {

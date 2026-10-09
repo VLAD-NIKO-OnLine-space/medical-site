@@ -36,6 +36,12 @@ function initials(string $name): string
     return implode('', array_slice($m[0], 0, 2));
 }
 
+/** Знак логотипа (крест с линией пульса) — один и тот же в шапке и подвале. */
+function logo_mark(string $class, int $size = 32): string
+{
+    return '<svg class="' . $class . '" width="' . $size . '" height="' . $size . '" viewBox="0 0 32 32" aria-hidden="true"><path d="M12 4h8v8h8v8h-8v8h-8v-8H4v-8h8z" fill="currentColor"/><path d="M6 16h5l2-4 4 8 2-4h7" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
 function icons(): array
 {
     static $icons;

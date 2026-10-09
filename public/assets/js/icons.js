@@ -13,3 +13,13 @@ for (const icon of document.querySelectorAll("morph-icon[data-hover]")) {
   trigger.addEventListener("focus", morph(hover));
   trigger.addEventListener("blur", morph(rest));
 }
+
+// частые вопросы: плюс перетекает в крестик при открытии ответа и обратно при закрытии
+for (const item of document.querySelectorAll(".faq__item")) {
+  const toggle = item.querySelector("[data-open-icon]");
+  const icon = toggle.querySelector("morph-icon");
+  const closedD = icon.querySelector("path").getAttribute("d");
+  const openD = toggle.dataset.openIcon;
+  if (item.open) icon.set(openD);
+  item.addEventListener("toggle", () => icon.morphTo(item.open ? openD : closedD));
+}
