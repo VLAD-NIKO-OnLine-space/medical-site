@@ -169,6 +169,26 @@ function sitemap(): string
     return $xml . "</urlset>\n";
 }
 
+/** Манифест для установки сайта на телефон: название — из админки. */
+function manifest(): string
+{
+    $name = content('site')['name'];
+    return json_encode([
+        'name' => $name,
+        'short_name' => $name,
+        'lang' => site()['lang'],
+        'start_url' => '/',
+        'display' => 'standalone',
+        'background_color' => '#f2faf7',
+        'theme_color' => '#f2faf7',
+        'icons' => [
+            ['src' => '/icon-192.png', 'sizes' => '192x192', 'type' => 'image/png'],
+            ['src' => '/icon-512.png', 'sizes' => '512x512', 'type' => 'image/png'],
+            ['src' => '/icon-maskable-512.png', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable'],
+        ],
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . "\n";
+}
+
 function robots(): string
 {
     return "User-agent: *\nAllow: /\nDisallow: /admin/\n\nSitemap: " . site()['domain'] . "/sitemap.xml\n";

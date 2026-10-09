@@ -30,6 +30,7 @@ foreach (pages() as $url => $file) {
 write("$dist/404.html", render_404());
 write("$dist/sitemap.xml", sitemap());
 write("$dist/robots.txt", robots());
+write("$dist/site.webmanifest", manifest());
 write("$dist/.htaccess", "ErrorDocument 404 /404.html\n");
 
 echo 'Собрано страниц: ' . count(pages()) . " → dist/\n";

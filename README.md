@@ -21,6 +21,7 @@
 | CSS, JS, картинки | `public/assets/` |
 | Фон первого экрана | `public/assets/img/hero-*` (AVIF/WebP/JPEG, десктоп и мобильная обрезка), исходник — `my-files/` |
 | Обложка видео на первом экране | `public/assets/img/video-cover-*` |
+| Иконки сайта (фавикон, Apple, Android) | `public/favicon.svg`, `favicon.ico`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`; манифест `/site.webmanifest` генерируется в `lib.php` (`manifest()`), название — из админки |
 | Иконки (Lucide) | `icons.php`, вывод — `<?= icon('calendar') ?>` |
 | Анимация иконок при наведении (Morphicons) | `public/assets/js/icons.js`, `public/assets/js/vendor/morphicons/` |
 | Маршрутизация (живой режим) | `public/index.php`, `public/.htaccess` |

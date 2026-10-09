@@ -11,6 +11,10 @@ if ($url === '/sitemap.xml') {
     header('Content-Type: application/xml; charset=utf-8');
     exit(sitemap());
 }
+if ($url === '/site.webmanifest') {
+    header('Content-Type: application/manifest+json; charset=utf-8');
+    exit(manifest());
+}
 if ($url === '/robots.txt') {
     header('Content-Type: text/plain; charset=utf-8');
     exit(robots());
