@@ -14,9 +14,9 @@
 <?php if ($c['eyebrow'] !== ''): ?>
 <div class="eyebrow"><?= e($c['eyebrow']) ?></div>
 <?php endif; ?>
-<h1 class="hero__title"><?= e($c['title']) ?><?php if ($c['title_accent'] !== ''): ?><br> <span class="text-accent"><?= e($c['title_accent']) ?></span><?php endif; ?></h1>
+<h1 class="hero__title"><?= e(typo($c['title'])) ?><?php if ($c['title_accent'] !== ''): ?><br> <span class="text-accent"><?= e(typo($c['title_accent'])) ?></span><?php endif; ?></h1>
 <?php if ($c['text'] !== ''): ?>
-<p class="hero__text"><?= nl2br(e($c['text']), false) ?></p>
+<p class="hero__text"><?= nl2br(e(typo($c['text'])), false) ?></p>
 <?php endif; ?>
 <a href="<?= e($c['button_href']) ?>" class="btn hero__btn"><?= icon($c['button_icon'], $c['button_icon_hover']) ?><?= e($c['button_text']) ?></a>
 </div>

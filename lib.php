@@ -10,6 +10,32 @@ function site(): array
     return $site ??= require __DIR__ . '/config.php';
 }
 
+/** Типографика: неразрывный пробел перед тире и после коротких слов — они не повиснут на краю строки. */
+function typo(string $s): string
+{
+    $s = preg_replace('/ ([—–])/u', "\u{00A0}$1", $s);
+    return preg_replace('/(?<![\p{L}\d])(\p{L}{1,2}) (?=[\p{L}\d«])/u', "$1\u{00A0}", $s);
+}
+
+/** Текст из админки в абзацы: пустая строка — новый <p>, перенос строки — <br>. */
+function paragraphs(string $text, string $class = ''): string
+{
+    $out = '';
+    foreach (preg_split('/\n\s*\n/', trim($text)) as $p) {
+        if (trim($p) !== '') {
+            $out .= '<p' . ($class !== '' ? ' class="' . $class . '"' : '') . '>' . nl2br(e(typo(trim($p))), false) . "</p>\n";
+        }
+    }
+    return $out;
+}
+
+/** Инициалы из ФИО для заглушки вместо фото: «Дмитриенко Алексей» → «ДА». */
+function initials(string $name): string
+{
+    preg_match_all('/(?<!\p{L})\p{L}/u', $name, $m);
+    return implode('', array_slice($m[0], 0, 2));
+}
+
 function icons(): array
 {
     static $icons;
