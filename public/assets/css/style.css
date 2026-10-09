@@ -5,15 +5,15 @@
   --header-space: 110px;
   --header-top: 20px;
   --header-radius: 36px;
-  --accent: #3fb58c;
-  --accent-dark: #178a68;
-  --on-accent: #0c3a2c;
-  --text: #13201b;
-  --muted: #3f4f49;
-  --bg: #f2faf7;
+  --accent: #2cb3b0;
+  --accent-dark: #127f80;
+  --on-accent: #073a3b;
+  --text: #122021;
+  --muted: #3d4f50;
+  --bg: #f1f9f9;
   --glass: rgba(255, 255, 255, 0.55);
   --glass-border: rgba(255, 255, 255, 0.8);
-  --shadow: 0 10px 30px rgba(20, 80, 60, 0.12);
+  --shadow: 0 10px 30px rgba(16, 74, 80, 0.12);
 }
 
 *,
@@ -76,7 +76,7 @@ main {
   text-decoration: none;
   white-space: nowrap;
   background: var(--accent);
-  box-shadow: 0 6px 16px rgba(63, 181, 140, 0.45);
+  box-shadow: 0 6px 16px rgba(44, 179, 176, 0.45);
   cursor: pointer;
   transition:
     background-color 0.25s ease,
@@ -100,13 +100,13 @@ morph-icon {
 }
 
 .btn:hover {
-  background: #2f9e79;
-  box-shadow: 0 12px 24px rgba(47, 158, 121, 0.45);
+  background: #1f9c9a;
+  box-shadow: 0 12px 24px rgba(31, 156, 154, 0.45);
   transform: translateY(-3px);
 }
 
 .btn:active {
-  box-shadow: 0 4px 12px rgba(47, 158, 121, 0.4);
+  box-shadow: 0 4px 12px rgba(31, 156, 154, 0.4);
   transform: translateY(0);
   transition-duration: 0.1s;
 }
@@ -289,7 +289,7 @@ morph-icon {
   margin-top: calc(var(--header-space) * -1);
   min-height: 100vh;
   min-height: 100svh;
-  background: linear-gradient(135deg, #e7f7f0, #c9ece0);
+  background: linear-gradient(135deg, #e5f6f6, #c6e9ea);
 }
 
 /* фон с осветлением закреплён на экране целиком, clip-path у .hero обрезает его по границам секции */
@@ -317,7 +317,7 @@ morph-icon {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(242, 250, 247, 0.95) 0%, rgba(242, 250, 247, 0.75) 35%, rgba(242, 250, 247, 0) 65%);
+  background: linear-gradient(90deg, rgba(241, 249, 249, 0.95) 0%, rgba(241, 249, 249, 0.75) 35%, rgba(241, 249, 249, 0) 65%);
 }
 
 /* при прокрутке первого экрана фон плавно увеличивается; анимацию ведёт сам браузер, синхронно с прокруткой */
@@ -366,7 +366,7 @@ morph-icon {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.9),
     inset 0 -1px 0 rgba(255, 255, 255, 0.2),
-    0 8px 24px rgba(20, 80, 60, 0.1);
+    0 8px 24px rgba(16, 74, 80, 0.1);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
   backdrop-filter: blur(20px) saturate(160%);
 }
@@ -383,19 +383,19 @@ morph-icon {
 
 @keyframes eyebrow-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(23, 138, 104, 0.45);
+    box-shadow: 0 0 0 0 rgba(18, 127, 128, 0.45);
   }
 
   70%,
   100% {
-    box-shadow: 0 0 0 9px rgba(23, 138, 104, 0);
+    box-shadow: 0 0 0 9px rgba(18, 127, 128, 0);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .eyebrow::before {
     animation: none;
-    box-shadow: 0 0 0 4px rgba(23, 138, 104, 0.18);
+    box-shadow: 0 0 0 4px rgba(18, 127, 128, 0.18);
   }
 }
 
@@ -436,7 +436,7 @@ morph-icon {
   border-radius: 36px;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 30px 70px rgba(20, 80, 60, 0.2);
+    0 30px 70px rgba(16, 74, 80, 0.2);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
   backdrop-filter: blur(24px) saturate(160%);
 }
@@ -450,7 +450,7 @@ morph-icon {
   overflow: hidden;
   border: 0;
   border-radius: 26px;
-  background: #cfe9df;
+  background: #cbe8e8;
   cursor: pointer;
 }
 
@@ -493,7 +493,7 @@ morph-icon {
   border-radius: 50%;
   color: var(--on-accent);
   background: var(--accent);
-  box-shadow: 0 10px 30px rgba(20, 80, 60, 0.35);
+  box-shadow: 0 10px 30px rgba(16, 74, 80, 0.35);
   animation: play-pulse 2.2s ease-out infinite;
   transition:
     transform 0.3s ease,
@@ -507,22 +507,22 @@ morph-icon {
 }
 
 .video-card__media:hover .video-card__play {
-  background: #2f9e79;
+  background: #1f9c9a;
   transform: scale(1.12);
 }
 
 @keyframes play-pulse {
   0% {
     box-shadow:
-      0 10px 30px rgba(20, 80, 60, 0.35),
-      0 0 0 0 rgba(63, 181, 140, 0.55);
+      0 10px 30px rgba(16, 74, 80, 0.35),
+      0 0 0 0 rgba(44, 179, 176, 0.55);
   }
 
   70%,
   100% {
     box-shadow:
-      0 10px 30px rgba(20, 80, 60, 0.35),
-      0 0 0 28px rgba(63, 181, 140, 0);
+      0 10px 30px rgba(16, 74, 80, 0.35),
+      0 0 0 28px rgba(44, 179, 176, 0);
   }
 }
 
@@ -568,12 +568,12 @@ morph-icon {
 .video-card__badge {
   flex: none;
   padding: 10px 18px;
-  border: 1px solid rgba(63, 181, 140, 0.35);
+  border: 1px solid rgba(44, 179, 176, 0.35);
   border-radius: 999px;
   font-size: 15px;
   font-weight: 600;
   color: var(--accent-dark);
-  background: rgba(63, 181, 140, 0.15);
+  background: rgba(44, 179, 176, 0.15);
 }
 
 /* Окно с видео */
@@ -678,7 +678,7 @@ html.is-menu-open {
 .about::before {
   top: 4%;
   left: -220px;
-  background: radial-gradient(circle, rgba(63, 181, 140, 0.32), rgba(63, 181, 140, 0) 70%);
+  background: radial-gradient(circle, rgba(44, 179, 176, 0.32), rgba(44, 179, 176, 0) 70%);
 }
 
 .about::after {
@@ -727,7 +727,7 @@ html.is-menu-open {
   font-size: clamp(96px, 12vw, 180px);
   font-weight: 800;
   letter-spacing: -0.04em;
-  color: rgba(23, 138, 104, 0.18);
+  color: rgba(18, 127, 128, 0.18);
 }
 
 .about__person {
@@ -740,7 +740,7 @@ html.is-menu-open {
   border-radius: 22px;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    0 16px 40px rgba(20, 80, 60, 0.14);
+    0 16px 40px rgba(16, 74, 80, 0.14);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
   backdrop-filter: blur(24px) saturate(160%);
 }
@@ -755,7 +755,7 @@ html.is-menu-open {
   font-size: 13px;
   font-weight: 600;
   color: var(--accent-dark);
-  background: rgba(63, 181, 140, 0.14);
+  background: rgba(44, 179, 176, 0.14);
 }
 
 .about__badge svg {
@@ -792,18 +792,18 @@ html.is-menu-open {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #2fbf71;
+  background: #22b5aa;
   animation: online-pulse 2s ease-out infinite;
 }
 
 @keyframes online-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(47, 191, 113, 0.5);
+    box-shadow: 0 0 0 0 rgba(34, 181, 170, 0.5);
   }
 
   70%,
   100% {
-    box-shadow: 0 0 0 8px rgba(47, 191, 113, 0);
+    box-shadow: 0 0 0 8px rgba(34, 181, 170, 0);
   }
 }
 
@@ -834,7 +834,7 @@ html.is-menu-open {
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.3));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 8px 20px rgba(20, 80, 60, 0.08);
+    0 8px 20px rgba(16, 74, 80, 0.08);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 }
@@ -860,17 +860,17 @@ html.is-menu-open {
   padding: 30px 40px 30px 36px;
   border-radius: 4px 0 0 4px;
   background:
-    radial-gradient(60% 120% at 0% 50%, rgba(63, 181, 140, 0.16), rgba(63, 181, 140, 0) 70%),
+    radial-gradient(60% 120% at 0% 50%, rgba(44, 179, 176, 0.16), rgba(44, 179, 176, 0) 70%),
     linear-gradient(
       90deg,
-      rgba(63, 181, 140, 0.2) 0%,
-      rgba(63, 181, 140, 0.17) 10%,
-      rgba(63, 181, 140, 0.13) 22%,
-      rgba(63, 181, 140, 0.09) 36%,
-      rgba(63, 181, 140, 0.055) 52%,
-      rgba(63, 181, 140, 0.028) 68%,
-      rgba(63, 181, 140, 0.01) 84%,
-      rgba(63, 181, 140, 0) 100%
+      rgba(44, 179, 176, 0.2) 0%,
+      rgba(44, 179, 176, 0.17) 10%,
+      rgba(44, 179, 176, 0.13) 22%,
+      rgba(44, 179, 176, 0.09) 36%,
+      rgba(44, 179, 176, 0.055) 52%,
+      rgba(44, 179, 176, 0.028) 68%,
+      rgba(44, 179, 176, 0.01) 84%,
+      rgba(44, 179, 176, 0) 100%
     );
 }
 
@@ -883,7 +883,7 @@ html.is-menu-open {
   width: 4px;
   border-radius: 4px;
   background: linear-gradient(180deg, var(--accent), var(--accent-dark));
-  box-shadow: 0 0 14px rgba(63, 181, 140, 0.45);
+  box-shadow: 0 0 14px rgba(44, 179, 176, 0.45);
 }
 
 .about__quote p {
@@ -911,7 +911,7 @@ html.is-menu-open {
   width: 720px;
   height: 720px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(63, 181, 140, 0.24), rgba(63, 181, 140, 0) 70%);
+  background: radial-gradient(circle, rgba(44, 179, 176, 0.24), rgba(44, 179, 176, 0) 70%);
 }
 
 .faq__head {
@@ -930,11 +930,11 @@ html.is-menu-open {
 
 /* вопросы без карточек: разделены тонкими линиями */
 .faq__list {
-  border-top: 1px solid rgba(20, 80, 60, 0.14);
+  border-top: 1px solid rgba(16, 74, 80, 0.14);
 }
 
 .faq__item {
-  border-bottom: 1px solid rgba(20, 80, 60, 0.14);
+  border-bottom: 1px solid rgba(16, 74, 80, 0.14);
 }
 
 /* плавное раскрытие ответа там, где браузер это умеет; в остальных — мгновенно */
@@ -994,14 +994,14 @@ html.is-menu-open {
   height: 40px;
   border-radius: 50%;
   color: var(--accent-dark);
-  background: rgba(63, 181, 140, 0.14);
+  background: rgba(44, 179, 176, 0.14);
   transition:
     color 0.25s ease,
     background-color 0.25s ease;
 }
 
 .faq__question:hover .faq__toggle {
-  background: rgba(63, 181, 140, 0.24);
+  background: rgba(44, 179, 176, 0.24);
 }
 
 .faq__item[open] .faq__toggle {
@@ -1029,7 +1029,7 @@ html.is-menu-open {
 /* белый на всю ширину экрана, прижат к низу без отступов */
 .footer {
   background: #fff;
-  border-top: 1px solid rgba(20, 80, 60, 0.08);
+  border-top: 1px solid rgba(16, 74, 80, 0.08);
 }
 
 .footer__panel {
@@ -1100,7 +1100,7 @@ html.is-menu-open {
   justify-content: space-between;
   gap: 12px 32px;
   padding-top: 24px;
-  border-top: 1px solid rgba(20, 80, 60, 0.12);
+  border-top: 1px solid rgba(16, 74, 80, 0.12);
 }
 
 .footer__bottom p {
@@ -1178,9 +1178,9 @@ html.is-menu-open {
     overflow-y: auto;
     overscroll-behavior: contain;
     background:
-      radial-gradient(78% 42% at 88% 0%, rgba(63, 181, 140, 0.2) 0%, transparent 68%),
+      radial-gradient(78% 42% at 88% 0%, rgba(44, 179, 176, 0.2) 0%, transparent 68%),
       radial-gradient(64% 38% at 4% 100%, rgba(190, 215, 240, 0.4) 0%, transparent 70%),
-      rgba(242, 250, 247, 0.92);
+      rgba(241, 249, 249, 0.92);
     -webkit-backdrop-filter: blur(24px) saturate(160%);
     backdrop-filter: blur(24px) saturate(160%);
     opacity: 0;
@@ -1229,7 +1229,7 @@ html.is-menu-open {
   .js .header__menu a {
     display: block;
     padding: 14px 4px;
-    border-bottom: 1px solid rgba(20, 80, 60, 0.08);
+    border-bottom: 1px solid rgba(16, 74, 80, 0.08);
     font-size: clamp(22px, 4.6vw, 28px);
     font-weight: 500;
     line-height: 1.25;
@@ -1331,7 +1331,7 @@ html.is-menu-open {
   }
 
   .hero__bg::after {
-    background: linear-gradient(180deg, rgba(242, 250, 247, 0.9) 0%, rgba(242, 250, 247, 0.7) 50%, rgba(242, 250, 247, 0.88) 100%);
+    background: linear-gradient(180deg, rgba(241, 249, 249, 0.9) 0%, rgba(241, 249, 249, 0.7) 50%, rgba(241, 249, 249, 0.88) 100%);
   }
 
   .hero__bg img {
