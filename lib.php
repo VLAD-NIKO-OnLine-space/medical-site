@@ -151,7 +151,8 @@ function pages(): array
 function render(string $file, string $url): string
 {
     $site = site();
-    $page = ['title' => '', 'description' => '', 'robots' => 'index, follow'];
+    // секции могут дописать в styles/scripts свои файлы: страница рендерится раньше, чем head
+    $page = ['title' => '', 'description' => '', 'robots' => 'index, follow', 'styles' => [], 'scripts' => []];
     ob_start();
     require $file;
     $content = ob_get_clean();

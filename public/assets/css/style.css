@@ -11,6 +11,8 @@
   --text: #122021;
   --muted: #3d4f50;
   --bg: #f1f9f9;
+  /* второстепенный мятный — фон секции «Контакты» */
+  --mint: #dcf1ee;
   --glass: rgba(255, 255, 255, 0.55);
   --glass-border: rgba(255, 255, 255, 0.8);
   --shadow: 0 10px 30px rgba(16, 74, 80, 0.12);
@@ -683,7 +685,7 @@ html.is-menu-open {
 
 .about::after {
   right: -220px;
-  bottom: -160px;
+  bottom: 0;
   background: radial-gradient(circle, rgba(190, 215, 240, 0.6), rgba(190, 215, 240, 0) 70%);
 }
 
@@ -891,6 +893,644 @@ html.is-menu-open {
   font-weight: 500;
   line-height: 1.7;
   color: var(--text);
+}
+
+/* Программа */
+
+.program {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding: 140px 0;
+}
+
+/* без картинки остаётся мягкий бирюзовый фон */
+.program::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 30%, rgba(44, 179, 176, 0.26), transparent 55%),
+    radial-gradient(ellipse at 85% 70%, rgba(190, 215, 240, 0.55), transparent 55%);
+}
+
+.program__bg {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+}
+
+.program__bg img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* дымка поверх фото, чтобы читался текст; границы секции чёткие */
+.program::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(241, 249, 249, 0.9), rgba(241, 249, 249, 0.62) 60%, rgba(241, 249, 249, 0.8));
+}
+
+.program__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: end;
+  gap: 32px clamp(48px, 6vw, 112px);
+}
+
+.program__head .section-title {
+  margin-bottom: 0;
+}
+
+.program__lead {
+  max-width: 620px;
+  margin: 0;
+  padding-left: 24px;
+  border-left: 3px solid var(--accent);
+  color: var(--muted);
+}
+
+/* Отзывы */
+
+.reviews {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+  /* снизу меньше: следом секция доступа со своим отступом сверху */
+  padding: 140px 0 40px;
+}
+
+.reviews::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 20%;
+  left: -240px;
+  width: 720px;
+  height: 720px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(44, 179, 176, 0.22), rgba(44, 179, 176, 0) 70%);
+}
+
+.reviews__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.reviews__head .section-title {
+  margin-bottom: 0;
+}
+
+.reviews__nav {
+  display: flex;
+  flex: none;
+  gap: 12px;
+}
+
+.reviews__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  color: var(--accent-dark);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.5));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 10px 24px rgba(16, 74, 80, 0.1);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  cursor: pointer;
+  transition:
+    color 0.25s,
+    background-color 0.25s,
+    box-shadow 0.25s,
+    opacity 0.25s,
+    translate 0.25s;
+}
+
+.reviews__arrow:hover {
+  color: var(--on-accent);
+  background: var(--accent);
+  box-shadow: 0 12px 28px rgba(44, 179, 176, 0.4);
+  translate: 0 -2px;
+}
+
+.reviews__arrow:focus-visible {
+  outline: 3px solid var(--accent-dark);
+  outline-offset: 3px;
+}
+
+.reviews__arrow.swiper-button-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* слайды выходят за контейнер до краёв экрана */
+.reviews__slider {
+  overflow: visible;
+}
+
+.reviews__slide {
+  height: auto;
+}
+
+/* пока слайдер не запустился — те же колонки, без скачка при запуске */
+.reviews__slider:not(.swiper-initialized) .swiper-wrapper {
+  gap: 24px;
+}
+
+.reviews__slider:not(.swiper-initialized) .reviews__slide {
+  width: calc((100% - 48px) / 3);
+}
+
+.review {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 32px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.5));
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 28px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 16px 40px rgba(16, 74, 80, 0.08);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s;
+}
+
+@media (hover: hover) {
+  .review:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      0 24px 50px rgba(16, 74, 80, 0.14);
+  }
+}
+
+.review__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.review__stars {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+}
+
+.review__star {
+  display: flex;
+  color: rgba(16, 74, 80, 0.18);
+}
+
+.review__star.is-on {
+  color: var(--accent);
+}
+
+.review__star svg {
+  fill: currentColor;
+}
+
+.review__quote {
+  display: flex;
+  margin: -6px -4px 0 0;
+  color: rgba(44, 179, 176, 0.25);
+}
+
+.review__text {
+  flex: 1;
+  margin: 0 0 28px;
+  line-height: 1.55;
+}
+
+.review__author {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(16, 74, 80, 0.1);
+}
+
+.review__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(145deg, var(--accent), var(--accent-dark));
+  box-shadow: 0 6px 16px rgba(44, 179, 176, 0.35);
+}
+
+.review__name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.review__date {
+  margin: 2px 0 0;
+  font-size: 16px;
+  line-height: 1.3;
+  color: var(--muted);
+}
+
+/* точки: активная вытягивается в полоску */
+.reviews__pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 40px;
+}
+
+.reviews__pagination .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(16, 74, 80, 0.18);
+  cursor: pointer;
+  transition:
+    width 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.4s;
+}
+
+.reviews__pagination .swiper-pagination-bullet-active {
+  width: 32px;
+  background: var(--accent);
+}
+
+.reviews__pagination .swiper-pagination-bullet:focus-visible {
+  outline: 3px solid var(--accent-dark);
+  outline-offset: 2px;
+}
+
+.reviews__pagination.swiper-pagination-lock {
+  display: none;
+}
+
+/* появление: карточки поднимаются по очереди */
+@media (prefers-reduced-motion: no-preference) {
+  .reviews.is-animated .review {
+    opacity: 0;
+    translate: 0 32px;
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i, 0) * 90ms),
+      translate 0.7s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i, 0) * 90ms),
+      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.4s;
+  }
+
+  .reviews.is-animated.is-inview .review {
+    opacity: 1;
+    translate: none;
+  }
+
+  .reviews__slider .swiper-wrapper {
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* Как получить доступ */
+
+.access {
+  position: relative;
+  isolation: isolate;
+  /* свечение может уходить за секцию вниз и вверх — без резкой границы */
+  overflow-x: clip;
+  /* снизу меньше: следом идут вопросы со своим отступом сверху */
+  padding: 120px 0 40px;
+}
+
+/* бирюзовое свечение за карточкой с ценой */
+.access::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  right: 8%;
+  width: 760px;
+  height: 760px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(44, 179, 176, 0.3), rgba(44, 179, 176, 0) 68%);
+  translate: 0 -50%;
+}
+
+.access__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 600px);
+  align-items: center;
+  gap: 64px clamp(48px, 7vw, 128px);
+}
+
+.access__body .section-title {
+  margin-bottom: 40px;
+}
+
+/* шаги: номера в стеклянных кружках, соединены тонкой линией */
+.access__steps {
+  display: grid;
+  gap: 28px;
+  margin: 0 0 36px;
+  padding: 0;
+  list-style: none;
+}
+
+.access__step {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.access__step:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: 27px;
+  width: 2px;
+  height: calc(100% + 28px);
+  background: linear-gradient(rgba(44, 179, 176, 0.5), rgba(44, 179, 176, 0.12));
+}
+
+.access__num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent-dark);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.55));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 8px 20px rgba(16, 74, 80, 0.1);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.access__step p {
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.access__note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.access__note small {
+  font-size: inherit;
+}
+
+.access__note svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--accent-dark);
+}
+
+/* карточка с ценой */
+.access-card {
+  position: relative;
+  overflow: hidden;
+  padding: 48px;
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.55));
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 32px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 30px 70px rgba(16, 74, 80, 0.14);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  backdrop-filter: blur(28px) saturate(160%);
+}
+
+/* блик в углу карточки */
+.access-card::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -160px;
+  right: -160px;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(44, 179, 176, 0.22), rgba(44, 179, 176, 0) 70%);
+}
+
+.access-card__label {
+  display: inline-flex;
+  margin: 0 0 20px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--accent-dark);
+  background: rgba(44, 179, 176, 0.14);
+}
+
+.access-card__title {
+  margin: 0 0 8px;
+  font-size: clamp(24px, 2vw, 30px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.access-card__price {
+  margin: 0 0 32px;
+  font-size: clamp(48px, 5vw, 72px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--accent-dark);
+}
+
+.access-card__features {
+  display: grid;
+  gap: 16px;
+  margin: 0 0 36px;
+  padding: 28px 0 0;
+  border-top: 1px solid rgba(16, 74, 80, 0.1);
+  list-style: none;
+}
+
+.access-card__features li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.access-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: var(--accent-dark);
+  background: rgba(44, 179, 176, 0.14);
+}
+
+.access-card__btn {
+  width: 100%;
+  min-height: 60px;
+  font-size: 18px;
+}
+
+.access-card__note {
+  margin: 20px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.access-card__note small {
+  font-size: inherit;
+}
+
+/* Контакты: последняя секция, мятный фон вплотную к футеру */
+
+.contacts {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding: 88px 0;
+  background: var(--mint);
+}
+
+/* светлые пятна, чтобы стеклянным карточкам было что размывать */
+.contacts::before,
+.contacts::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 640px;
+  height: 640px;
+  border-radius: 50%;
+}
+
+.contacts::before {
+  top: -220px;
+  right: 10%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0) 70%);
+}
+
+.contacts::after {
+  bottom: -320px;
+  left: -160px;
+  background: radial-gradient(circle, rgba(44, 179, 176, 0.25), rgba(44, 179, 176, 0) 70%);
+}
+
+.contacts .section-title {
+  margin-bottom: 32px;
+}
+
+.contacts__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 32px;
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.5));
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 20px 50px rgba(16, 74, 80, 0.08);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+}
+
+.contact-card__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.contact-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  color: var(--on-accent);
+  background: linear-gradient(145deg, var(--accent), #5fcfcb);
+  box-shadow: 0 10px 24px rgba(44, 179, 176, 0.35);
+}
+
+.contact-card__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.contact-card__text {
+  margin: 0 0 18px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.contact-card__note {
+  margin: auto 0 0;
+  padding-top: 14px;
+  border-top: 1px solid rgba(16, 74, 80, 0.1);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.contact-card__note small {
+  font-size: inherit;
 }
 
 /* Частые вопросы */
@@ -1130,6 +1770,10 @@ html.is-menu-open {
 /* Адаптив */
 
 @media (max-width: 1240px) {
+  .reviews__slider:not(.swiper-initialized) .reviews__slide {
+    width: calc((100% - 24px) / 2);
+  }
+
   :root {
     --header-radius: 34px;
   }
@@ -1279,6 +1923,29 @@ html.is-menu-open {
     grid-template-columns: 1fr;
   }
 
+  .program__head {
+    grid-template-columns: 1fr;
+  }
+
+  .access__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contacts__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .access-card {
+    max-width: 640px;
+  }
+
+  /* свечение целиком внутри секции, иначе по её низу видна граница */
+  .access::before {
+    top: auto;
+    bottom: 0;
+    translate: none;
+  }
+
   .about__media {
     position: static;
     order: -1;
@@ -1392,6 +2059,108 @@ html.is-menu-open {
   .footer__bottom {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .program {
+    padding: 80px 0;
+  }
+
+  .reviews {
+    padding: 80px 0 24px;
+  }
+
+  .access {
+    padding: 80px 0 24px;
+  }
+
+  .contacts {
+    padding: 64px 0;
+  }
+
+  .contacts .section-title {
+    margin-bottom: 24px;
+  }
+
+  .contacts__grid {
+    gap: 14px;
+  }
+
+  .contact-card {
+    padding: 22px 20px;
+    border-radius: 22px;
+  }
+
+  .contact-card__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .contact-card__title {
+    font-size: 20px;
+  }
+
+  .access__body .section-title {
+    margin-bottom: 28px;
+  }
+
+  .access__steps {
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+
+  .access__step {
+    gap: 16px;
+  }
+
+  .access__step:not(:last-child)::before {
+    left: 23px;
+    height: calc(100% + 20px);
+  }
+
+  .access__num {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+
+  .access-card {
+    padding: 28px 22px;
+    border-radius: 26px;
+  }
+
+  .access-card__price {
+    margin-bottom: 24px;
+  }
+
+  .access-card__features {
+    padding-top: 22px;
+    margin-bottom: 28px;
+  }
+
+  .reviews__head {
+    margin-bottom: 32px;
+  }
+
+  .reviews__nav {
+    display: none;
+  }
+
+  .reviews__slider:not(.swiper-initialized) .reviews__slide {
+    width: calc(100% / 1.08);
+  }
+
+  .review {
+    padding: 24px;
+    border-radius: 24px;
+  }
+
+  .reviews__pagination {
+    margin-top: 28px;
+  }
+
+  .program__lead {
+    padding-left: 18px;
   }
 
   .faq__head {

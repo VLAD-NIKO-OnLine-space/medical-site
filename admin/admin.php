@@ -74,6 +74,12 @@ function validate_field(array $f, mixed $v, string $name, array &$errors): mixed
                 $errors[$name] = 'Нет такой иконки.';
             }
             return $v;
+        case 'rating':
+            $v = is_string($v) ? $v : '';
+            if (!in_array($v, ['1', '2', '3', '4', '5'], true)) {
+                $errors[$name] = 'Выберите оценку от 1 до 5.';
+            }
+            return $v;
         case 'url':
             $v = clean_text($v, 500, false) ?? '';
             if ($v === '') {
@@ -131,6 +137,13 @@ function field_html(array $f, mixed $value, string $name, array $errors): string
             }
             $input = '<div class="field__icon"><span class="field__icon-preview">' . icon($value, '', 22) . '</span>'
                 . '<select class="field__input" data-icon-select' . $attrs . '>' . $options . '</select></div>';
+            break;
+        case 'rating':
+            $options = '';
+            foreach (['5', '4', '3', '2', '1'] as $n) {
+                $options .= '<option value="' . $n . '"' . ($n === $value ? ' selected' : '') . '>' . str_repeat('★', (int) $n) . str_repeat('☆', 5 - (int) $n) . ' ' . $n . '</option>';
+            }
+            $input = '<select class="field__input"' . $attrs . '>' . $options . '</select>';
             break;
         default:
             $extra = $f['type'] === 'url' ? ' inputmode="url" spellcheck="false" autocomplete="off"' : '';

@@ -19,9 +19,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap">
+<?php foreach ($page['styles'] as $href): ?>
+<link rel="stylesheet" href="<?= e($href) ?>">
+<?php endforeach; ?>
 <link rel="stylesheet" href="/assets/css/style.css">
 <script>document.documentElement.classList.add("js")</script>
 <script type="module" src="/assets/js/header.js"></script>
 <script type="module" src="/assets/js/icons.js"></script>
 <script type="module" src="/assets/js/video.js"></script>
+<?php foreach ($page['scripts'] as $src): ?>
+<script type="module" src="<?= e($src) ?>"></script>
+<?php endforeach; ?>
 </head>
