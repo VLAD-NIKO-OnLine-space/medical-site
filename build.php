@@ -31,6 +31,8 @@ write("$dist/404.html", render_404());
 write("$dist/sitemap.xml", sitemap());
 write("$dist/robots.txt", robots());
 write("$dist/site.webmanifest", manifest());
-write("$dist/.htaccess", "ErrorDocument 404 /404.html\n");
+// сжатие, кэш и заголовки из public/.htaccess; маршрутизация через index.php статике не нужна
+$htaccess = preg_replace('/^Rewrite.*\n/m', '', file_get_contents(__DIR__ . '/public/.htaccess'));
+write("$dist/.htaccess", "ErrorDocument 404 /404.html\n" . $htaccess);
 
 echo 'Собрано страниц: ' . count(pages()) . " → dist/\n";

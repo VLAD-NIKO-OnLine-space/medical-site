@@ -1,39 +1,54 @@
-// ядро Swiper без бандла: экспортирует класс под коротким именем S
-import { S as Swiper } from "./vendor/swiper/shared/swiper-core.js";
-import Navigation from "./vendor/swiper/modules/navigation.js";
-import Pagination from "./vendor/swiper/modules/pagination.js";
-import Keyboard from "./vendor/swiper/modules/keyboard.js";
-import A11y from "./vendor/swiper/modules/a11y.js";
-
 const section = document.querySelector(".reviews");
 const el = section.querySelector("[data-reviews]");
 
-new Swiper(el, {
-  modules: [Navigation, Pagination, Keyboard, A11y],
-  slidesPerView: 1.08,
-  spaceBetween: 16,
-  speed: 700,
-  grabCursor: true,
-  keyboard: { enabled: true, onlyInViewport: true },
-  navigation: {
-    prevEl: section.querySelector("[data-reviews-prev]"),
-    nextEl: section.querySelector("[data-reviews-next]"),
+// Swiper (~40 КБ) качается только на подходе к секции: первому экрану он не нужен,
+// а до запуска карточки и так стоят рядами за счёт своих стилей
+const init = async () => {
+  // ядро Swiper без бандла: экспортирует класс под коротким именем S
+  const [{ S: Swiper }, ...modules] = await Promise.all([
+    import("./vendor/swiper/shared/swiper-core.js"),
+    import("./vendor/swiper/modules/navigation.js"),
+    import("./vendor/swiper/modules/pagination.js"),
+    import("./vendor/swiper/modules/keyboard.js"),
+    import("./vendor/swiper/modules/a11y.js"),
+  ]);
+  new Swiper(el, {
+    modules: modules.map((m) => m.default),
+    slidesPerView: 1.08,
+    spaceBetween: 16,
+    speed: 700,
+    grabCursor: true,
+    keyboard: { enabled: true, onlyInViewport: true },
+    navigation: {
+      prevEl: section.querySelector("[data-reviews-prev]"),
+      nextEl: section.querySelector("[data-reviews-next]"),
+    },
+    pagination: {
+      el: section.querySelector("[data-reviews-pagination]"),
+      clickable: true,
+    },
+    a11y: {
+      prevSlideMessage: "Предыдущий отзыв",
+      nextSlideMessage: "Следующий отзыв",
+      paginationBulletMessage: "Перейти к отзыву {{index}}",
+      slideLabelMessage: "Отзыв {{index}} из {{slidesLength}}",
+    },
+    breakpoints: {
+      641: { slidesPerView: 2, spaceBetween: 20 },
+      1241: { slidesPerView: 3, spaceBetween: 24 },
+    },
+  });
+};
+
+const loader = new IntersectionObserver(
+  ([entry]) => {
+    if (!entry.isIntersecting) return;
+    loader.disconnect();
+    init();
   },
-  pagination: {
-    el: section.querySelector("[data-reviews-pagination]"),
-    clickable: true,
-  },
-  a11y: {
-    prevSlideMessage: "Предыдущий отзыв",
-    nextSlideMessage: "Следующий отзыв",
-    paginationBulletMessage: "Перейти к отзыву {{index}}",
-    slideLabelMessage: "Отзыв {{index}} из {{slidesLength}}",
-  },
-  breakpoints: {
-    641: { slidesPerView: 2, spaceBetween: 20 },
-    1241: { slidesPerView: 3, spaceBetween: 24 },
-  },
-});
+  { rootMargin: "1000px 0px" },
+);
+loader.observe(section);
 
 // карточки появляются по очереди, когда секция доходит до экрана;
 // прячутся только здесь, чтобы при сбое скрипта отзывы остались видны

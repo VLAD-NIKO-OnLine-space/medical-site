@@ -16,18 +16,21 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#f1f9f9">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap">
+<?php /* шрифт нужен уже первому экрану: браузер начинает качать его вместе с CSS, а не после разбора стилей */ ?>
+<link rel="preload" href="/assets/fonts/inter-core.woff2" as="font" type="font/woff2" crossorigin>
 <?php foreach ($page['styles'] as $href): ?>
-<link rel="stylesheet" href="<?= e($href) ?>">
+<link rel="stylesheet" href="<?= e(asset($href)) ?>">
 <?php endforeach; ?>
-<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="<?= e(asset('/assets/css/style.css')) ?>">
 <script>document.documentElement.classList.add("js")</script>
-<script type="module" src="/assets/js/header.js"></script>
-<script type="module" src="/assets/js/icons.js"></script>
-<script type="module" src="/assets/js/video.js"></script>
+<script type="module" src="<?= e(asset('/assets/js/header.js')) ?>"></script>
+<script type="module" src="<?= e(asset('/assets/js/icons.js')) ?>"></script>
+<script type="module" src="<?= e(asset('/assets/js/video.js')) ?>"></script>
 <?php foreach ($page['scripts'] as $src): ?>
-<script type="module" src="<?= e($src) ?>"></script>
+<script type="module" src="<?= e(asset($src)) ?>"></script>
+<?php endforeach; ?>
+<?php /* модули Morphicons подгружают друг друга цепочкой — заранее качаем все сразу, без ожидания каждого звена */ ?>
+<?php foreach (['element.js', 'controller-CXZuwJ_M.js', 'dom.js', 'spring-CFHloqPP.js', 'normalize-CYnN3Npw.js'] as $f): ?>
+<link rel="modulepreload" href="/assets/js/vendor/morphicons/<?= $f ?>">
 <?php endforeach; ?>
 </head>

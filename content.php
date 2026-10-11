@@ -43,7 +43,7 @@ return [
             'title_accent' => ['label' => 'Заголовок H1: вторая строка (цветная)', 'type' => 'text', 'optional' => true, 'default' => 'С пониманием и поддержкой'],
             'text' => ['label' => 'Текст под заголовком', 'type' => 'textarea', 'optional' => true, 'default' => 'Когда лечение позади, вопросы остаются. Разбираемся вместе с врачом, что происходит в периоде восстановления и о чём важно поговорить на приёме.'],
             'button_text' => ['label' => 'Кнопка: текст', 'type' => 'text', 'default' => 'Ознакомиться с программой'],
-            'button_href' => ['label' => 'Кнопка: ссылка', 'type' => 'url', 'default' => '/programma/'],
+            'button_href' => ['label' => 'Кнопка: ссылка', 'type' => 'url', 'default' => '/#programma'],
             'button_icon' => ['label' => 'Кнопка: иконка', 'type' => 'icon', 'default' => 'book-open'],
             'button_icon_hover' => ['label' => 'Кнопка: иконка при наведении', 'type' => 'icon', 'default' => 'book-open-check'],
             'image_alt' => ['label' => 'Описание фона (alt)', 'type' => 'text', 'hint' => 'Для поисковиков и незрячих пользователей', 'default' => 'Уютный кабинет врача с цветами и зеленью'],

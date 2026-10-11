@@ -4,6 +4,13 @@ function e(string $s): string
     return htmlspecialchars($s, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 }
 
+/** Адрес файла из public/ с меткой версии: после правки файла браузер скачает его заново, а не возьмёт старый из кэша. */
+function asset(string $path): string
+{
+    $file = __DIR__ . '/public' . $path;
+    return is_file($file) ? $path . '?v=' . filemtime($file) : $path;
+}
+
 function site(): array
 {
     static $site;

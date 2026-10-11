@@ -1,3 +1,28 @@
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.php [L]
+
+# Ниже — то же, что в конфиге nginx (server/nginx/): сжатие, кэш и заголовки безопасности для хостинга на Apache.
+# build.php переносит эти правила в dist/.htaccess без строк Rewrite.
+
+AddType font/woff2 .woff2
+AddType image/avif .avif
+
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml text/javascript application/javascript application/json application/manifest+json application/xml image/svg+xml image/x-icon
+</IfModule>
+
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+Header always setifempty X-Frame-Options "SAMEORIGIN"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+
+# картинки, шрифты, CSS и JS — 30 дней; CSS и JS с меткой ?v= (asset() в lib.php) — год: адрес меняется вместе с файлом
+<FilesMatch "\.(css|js|woff2|avif|webp|jpe?g|png|svg|ico)$">
+Header set Cache-Control "public, max-age=2592000"
+<If "%{QUERY_STRING} =~ /(^|&)v=/">
+Header set Cache-Control "public, max-age=31536000, immutable"
+</If>
+</FilesMatch>
+</IfModule>

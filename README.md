@@ -11,9 +11,12 @@
 | Что редактируется в админке (схема полей и значения по умолчанию) | `content.php` |
 | Админка | `admin/`, стили и скрипт — `public/assets/admin/` |
 | Создать администратора / сменить пароль | `php admin-user.php <логин> [пароль]` |
-| `<head>`: мета, canonical, og-теги, CSS | `templates/head.php` |
+| `<head>`: мета, canonical, og-теги, CSS, предзагрузка шрифта и модулей | `templates/head.php` |
+| Шрифт Inter (свой сервер, не Google Fonts) | `public/assets/fonts/`, подключение — в начале `style.css` |
+| Слайдер отзывов (Swiper) | `public/assets/js/reviews.js`, `public/assets/js/vendor/swiper/` |
+| Копия конфига nginx (сжатие, кэш, заголовки) | `server/nginx/` |
 | Шапка | `templates/header.php` |
-| Секции главной | `templates/hero.php`, `templates/questions.php` |
+| Секции главной | `templates/hero.php`, `about.php`, `program.php`, `reviews.php`, `access.php`, `faq.php`, `contacts.php` |
 | Подвал | `templates/footer.php` |
 | Каркас страницы | `templates/layout.php` |
 | Страницы | `pages/*.php` |
@@ -95,6 +98,23 @@ ssh -N -L 8000:127.0.0.1:8000 root@164.90.165.153
 
 и открыть **http://localhost:8000**. Закрыть туннель — `Ctrl+C` в его окне.
 
+## Скорость загрузки
+
+- **Шрифт** — Inter со своего сервера, вариативный (один файл на все начертания). `inter-core.woff2` (~37 КБ) содержит только символы текстов сайта: русский и латинский алфавит, цифры, знаки препинания, ₽. Он предзагружается в `head.php`. Полные `inter-cyrillic.woff2` и `inter-latin.woff2` браузер скачает, только если в тексте из админки встретится символ не из core (например, «é»). Пересобрать core под новый набор символов можно через `pyftsubset` из fonttools.
+- **CSS и JS подключаются через `asset('/assets/…')`** — к адресу добавляется `?v=<время изменения файла>`. Такие файлы сервер кэширует в браузере на год: после правки адрес меняется, и браузер сразу берёт новую версию. Картинки, шрифты и модули из `vendor/` без метки кэшируются на 30 дней. Поэтому **заменённую картинку сохранять под новым именем**, иначе посетители до 30 дней будут видеть старую.
+- **Свои CSS/JS для секции** шаблон добавляет в `$page['styles']` / `$page['scripts']` (см. `templates/reviews.php`) — они подключаются только на страницах с этой секцией.
+- **Swiper** (~40 КБ) скачивается, только когда до отзывов остаётся около экрана прокрутки.
+- **Модули Morphicons** предзагружаются все сразу (`modulepreload` в `head.php`), а не цепочкой. Если обновить Morphicons и имена файлов изменятся — поправить список в `head.php`.
+- **Картинки** — AVIF/WebP/JPEG нескольких размеров через `<picture>`, у всех заданы `width`/`height`. Картинка первого экрана — `fetchpriority="high"`, ниже первого экрана — `loading="lazy"`.
+- **Сервер** (`server/nginx/` — копия рабочего конфига из `/etc/nginx/`): gzip, кэш по правилам выше, заголовки безопасности, версия nginx скрыта. Для Apache те же правила — в `public/.htaccess`, при сборке они попадают в `dist/.htaccess`.
+
+После правки конфига на сервере обновить копию в репозитории:
+
+```bash
+cp /etc/nginx/sites-available/scr-system server/nginx/scr-system.conf
+cp /etc/nginx/snippets/scr-headers.conf server/nginx/scr-headers.conf
+```
+
 ## Админка
 
 Адрес: **/admin/** (сейчас — http://164.90.165.153/admin/). Закрыта от поисковиков (`robots.txt`, `noindex`).
@@ -143,3 +163,4 @@ php build.php
 - В `config.php` заменить `https://example.com` на реальный домен — от него строятся canonical, `og:url`, `sitemap.xml` и `robots.txt`.
 - Создать администратора и в админке заменить название сайта и тексты.
 - Поменять язык (`lang`) в `config.php`, если нужно.
+- Подключить домен и HTTPS (Let's Encrypt): после этого включить в nginx `http2` и заголовок `Strict-Transport-Security`.
