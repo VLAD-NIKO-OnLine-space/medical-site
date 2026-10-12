@@ -1,6 +1,9 @@
 <?php
 $c = content('about');
-$photo = is_file(__DIR__ . '/../public/assets/img/doctor-960.webp');
+// нет файла фото — вместо него инициалы
+$photo = is_file(__DIR__ . "/../public{$c['photo']['src']}-{$c['photo']['w'][0]}.webp");
+// иконки тезисов по порядку; для добавленных в админке тезисов — галочка
+$pointIcons = ['message-circle', 'list-checks', 'award'];
 ?>
 <section class="about" id="o-vrache" aria-labelledby="about-title">
 <div class="container about__grid">
@@ -14,8 +17,8 @@ $photo = is_file(__DIR__ . '/../public/assets/img/doctor-960.webp');
 <?php endif; ?>
 <?php if ($c['points']): ?>
 <ul class="about__points">
-<?php foreach ($c['points'] as $point): ?>
-<li><?= icon($point['icon'], '', 20) ?><?= e($point['text']) ?></li>
+<?php foreach ($c['points'] as $i => $point): ?>
+<li><?= icon($pointIcons[$i] ?? 'check', '', 20) ?><?= e($point['text']) ?></li>
 <?php endforeach; ?>
 </ul>
 <?php endif; ?>
@@ -36,11 +39,7 @@ $photo = is_file(__DIR__ . '/../public/assets/img/doctor-960.webp');
 <div class="about__media">
 <div class="about__photo<?= $photo ? '' : ' about__photo--empty' ?>">
 <?php if ($photo): ?>
-<picture>
-<source type="image/avif" srcset="/assets/img/doctor-640.avif 640w, /assets/img/doctor-960.avif 960w" sizes="(max-width: 1024px) 90vw, 40vw">
-<source type="image/webp" srcset="/assets/img/doctor-640.webp 640w, /assets/img/doctor-960.webp 960w" sizes="(max-width: 1024px) 90vw, 40vw">
-<img src="/assets/img/doctor-960.png" width="960" height="1200" alt="<?= e($c['photo_alt']) ?>" loading="lazy" decoding="async">
-</picture>
+<?= picture($c['photo'], '(max-width: 1024px) 90vw, 40vw', $c['photo_alt'], 'loading="lazy" decoding="async"') ?>
 <?php else: ?>
 <span class="about__monogram" aria-hidden="true"><?= e(initials($c['name'])) ?></span>
 <?php endif; ?>

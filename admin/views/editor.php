@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Админка — <?= e(content('site')['name']) ?></title>
-<link rel="stylesheet" href="/assets/admin/admin.css">
+<link rel="stylesheet" href="<?= e(asset('/assets/admin/admin.css')) ?>">
 </head>
 <body class="admin">
 <header class="topbar">
@@ -23,7 +23,7 @@
 <a href="#block-<?= e($block) ?>"><?= e($b['title']) ?></a>
 <?php endforeach; ?>
 </nav>
-<form class="editor" method="post" action="<?= ADMIN_URL ?>" data-editor novalidate>
+<form class="editor" method="post" action="<?= ADMIN_URL ?>" enctype="multipart/form-data" data-editor novalidate>
 <input type="hidden" name="csrf" value="<?= e($csrf) ?>">
 <input type="hidden" name="action" value="save">
 <?php if ($flash): ?>
@@ -48,7 +48,6 @@
 </div>
 </form>
 </div>
-<script type="application/json" id="icons-data"><?= json_encode(icons(), JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?></script>
-<script src="/assets/admin/admin.js" defer></script>
+<script src="<?= e(asset('/assets/admin/admin.js')) ?>" defer></script>
 </body>
 </html>

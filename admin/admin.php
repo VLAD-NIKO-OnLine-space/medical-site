@@ -6,6 +6,8 @@ const ADMIN_URL = '/admin/';
 const LOGIN_LIMIT = 5;
 const LOGIN_WINDOW = 900;
 
+require __DIR__ . '/images.php';
+
 function admin_redirect(): never
 {
     header('Location: ' . ADMIN_URL, true, 303);
@@ -68,12 +70,6 @@ function validate_field(array $f, mixed $v, string $name, array &$errors): mixed
                 $errors[$name] = 'Слишком много элементов, максимум 30.';
             }
             return $items;
-        case 'icon':
-            $v = is_string($v) ? $v : '';
-            if ($v !== '' && !isset(icons()[$v])) {
-                $errors[$name] = 'Нет такой иконки.';
-            }
-            return $v;
         case 'rating':
             $v = is_string($v) ? $v : '';
             if (!in_array($v, ['1', '2', '3', '4', '5'], true)) {
@@ -110,7 +106,10 @@ function validate_all(mixed $post): array
     $errors = [];
     foreach (schema() as $block => $b) {
         foreach ($b['fields'] as $key => $f) {
-            $values[$block][$key] = validate_field($f, $post[$block][$key] ?? '', "content[$block][$key]", $errors);
+            // картинку меняет только загрузка файла — из формы её значение не берём
+            $values[$block][$key] = $f['type'] === 'image'
+                ? content($block)[$key]
+                : validate_field($f, $post[$block][$key] ?? '', "content[$block][$key]", $errors);
         }
     }
     return [$values, $errors];
@@ -121,22 +120,17 @@ function field_html(array $f, mixed $value, string $name, array $errors): string
     if ($f['type'] === 'list') {
         return list_html($f, is_array($value) ? $value : [], $name, $errors);
     }
+    if ($f['type'] === 'image') {
+        return image_html($f, $value, $name, $errors);
+    }
     $id = 'f-' . preg_replace('/[^a-z0-9_]+/i', '-', $name);
     $value = is_string($value) ? $value : '';
     $error = $errors[$name] ?? null;
     $attrs = ' id="' . $id . '" name="' . e($name) . '"' . ($error ? ' aria-invalid="true"' : '');
-    $required = empty($f['optional']) && $f['type'] !== 'icon' ? ' required' : '';
+    $required = empty($f['optional']) ? ' required' : '';
     switch ($f['type']) {
         case 'textarea':
             $input = '<textarea class="field__input" rows="3"' . $attrs . $required . '>' . e($value) . '</textarea>';
-            break;
-        case 'icon':
-            $options = '<option value="">— без иконки —</option>';
-            foreach (icons() as $key => $d) {
-                $options .= '<option value="' . e($key) . '"' . ($key === $value ? ' selected' : '') . '>' . e($key) . '</option>';
-            }
-            $input = '<div class="field__icon"><span class="field__icon-preview">' . icon($value, '', 22) . '</span>'
-                . '<select class="field__input" data-icon-select' . $attrs . '>' . $options . '</select></div>';
             break;
         case 'rating':
             $options = '';
@@ -153,6 +147,28 @@ function field_html(array $f, mixed $value, string $name, array $errors): string
         . '<label class="field__label" for="' . $id . '">' . e($f['label']) . '</label>'
         . (isset($f['hint']) ? '<p class="field__hint">' . e($f['hint']) . '</p>' : '')
         . $input
+        . ($error ? '<p class="field__error">' . e($error) . '</p>' : '')
+        . '</div>';
+}
+
+/** Картинка: превью текущей и кнопка замены; файл уходит в upload[блок][поле]. */
+function image_html(array $f, array $img, string $name, array $errors): string
+{
+    $id = 'f-' . preg_replace('/[^a-z0-9_]+/i', '-', $name);
+    $error = $errors[$name] ?? null;
+    $size = end($img['w']) . '×' . $img['height'] . ' px';
+    return '<div class="field field--wide">'
+        . '<label class="field__label" for="' . $id . '">' . e($f['label']) . '</label>'
+        . (isset($f['hint']) ? '<p class="field__hint">' . e($f['hint']) . '</p>' : '')
+        . '<div class="image-field' . (!empty($f['alpha']) ? ' image-field--alpha' : '') . '">'
+        . '<img class="image-field__preview" src="' . e("{$img['src']}-{$img['w'][0]}.webp") . '" alt="" data-image-preview>'
+        . '<div class="image-field__body">'
+        . '<p class="image-field__name" data-image-name>Сейчас: ' . $size . '</p>'
+        . '<label class="list__add image-field__btn">' . icon('image-up', '', 18) . 'Заменить картинку'
+        . '<input class="image-field__input" type="file" id="' . $id . '" name="' . e(preg_replace('/^content/', 'upload', $name)) . '"'
+        . ' accept="image/jpeg,image/png,image/webp,image/avif" data-image-input></label>'
+        . '<p class="field__hint">Новая картинка появится на сайте после «Сохранить».</p>'
+        . '</div></div>'
         . ($error ? '<p class="field__error">' . e($error) . '</p>' : '')
         . '</div>';
 }
@@ -222,12 +238,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         admin_redirect();
     } elseif ($action === 'save' && isset($_SESSION['admin'])) {
         [$values, $errors] = validate_all($_POST['content'] ?? []);
+        // картинки обрабатываем, только когда остальные поля в порядке, — иначе файл пришлось бы выбирать заново впустую
+        $replaced = [];
+        $created = [];
         if (!$errors) {
+            foreach (schema() as $block => $b) {
+                foreach ($b['fields'] as $key => $f) {
+                    if ($f['type'] === 'image' && ($img = upload_image($f, $block, $key, $errors))) {
+                        $replaced[] = $values[$block][$key];
+                        $created[] = $values[$block][$key] = $img;
+                    }
+                }
+            }
+        }
+        if ($errors) {
+            array_map('delete_image', $created);
+        } else {
             db()->beginTransaction();
             foreach ($values as $block => $data) {
                 save_content($block, $data);
             }
             db()->commit();
+            array_map('delete_image', $replaced);
             $_SESSION['flash'] = 'Изменения сохранены в ' . date('H:i');
             admin_redirect();
         }

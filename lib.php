@@ -68,6 +68,28 @@ function icon(string $name, string $hover = '', int $size = 20): string
     return '<morph-icon reduced-motion="user" data-hover="' . e($icons[$hover]) . '">' . $svg . '</morph-icon>';
 }
 
+/**
+ * <picture> для картинки из админки (поле типа image): AVIF и WebP с запасным JPEG/PNG, все ширины из нарезки.
+ * $img: src — путь без «-ширина.формат», w — ширины, mw — ширины обрезки для телефона (до 640px), ext — запасной формат.
+ */
+function picture(array $img, string $sizes, string $alt, string $attrs = '', string $class = ''): string
+{
+    $set = fn(string $base, array $widths, string $ext): string => e(implode(', ', array_map(fn($w) => "$base-$w.$ext {$w}w", $widths)));
+    $formats = ['avif' => 'image/avif', 'webp' => 'image/webp', $img['ext'] => ''];
+    $html = '<picture' . ($class !== '' ? ' class="' . $class . '"' : '') . '>';
+    if (!empty($img['mw'])) {
+        foreach ($formats as $ext => $type) {
+            $html .= '<source media="(max-width: 640px)"' . ($type ? ' type="' . $type . '"' : '') . ' srcset="' . $set($img['src'] . '-mobile', $img['mw'], $ext) . '" sizes="100vw">';
+        }
+    }
+    foreach (['avif' => 'image/avif', 'webp' => 'image/webp'] as $ext => $type) {
+        $html .= '<source type="' . $type . '" srcset="' . $set($img['src'], $img['w'], $ext) . '" sizes="' . $sizes . '">';
+    }
+    $mid = $img['w'][intdiv(count($img['w']), 2)];
+    return $html . '<img src="' . e("{$img['src']}-$mid.{$img['ext']}") . '" srcset="' . $set($img['src'], $img['w'], $img['ext']) . '" sizes="' . $sizes . '"'
+        . ' width="' . (int) $img['width'] . '" height="' . (int) $img['height'] . '" alt="' . e($alt) . '"' . ($attrs !== '' ? ' ' . $attrs : '') . '></picture>';
+}
+
 /** Как показать видео по ссылке: ['file', src] для .mp4/.webm, иначе ['iframe', embed-src]; null — ссылки нет. */
 function video_embed(string $url): ?array
 {

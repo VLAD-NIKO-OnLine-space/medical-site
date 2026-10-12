@@ -279,22 +279,69 @@ textarea.field__input {
   color: var(--danger);
 }
 
-.field__icon {
+/* Картинки */
+
+.image-field {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 20px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
 }
 
-.field__icon-preview {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.image-field__preview {
   flex: none;
-  width: 42px;
-  height: 42px;
+  width: 240px;
+  aspect-ratio: 16 / 9;
   border-radius: 10px;
-  color: var(--accent-dark);
-  background: rgba(44, 179, 176, 0.15);
+  object-fit: cover;
+  background: var(--bg);
+}
+
+/* фото с прозрачным фоном показываем целиком, на клетке — видно, где прозрачно */
+.image-field--alpha .image-field__preview {
+  width: 140px;
+  aspect-ratio: 4 / 5;
+  object-fit: contain;
+  background: repeating-conic-gradient(#e3eeee 0 25%, #fff 0 50%) 0 0 / 16px 16px;
+}
+
+.image-field__body {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  min-width: 0;
+}
+
+.image-field__name {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+}
+
+.image-field__btn {
+  position: relative;
+  margin: 0;
+}
+
+/* сам выбор файла спрятан, кликается подпись-кнопка; с клавиатуры фокус виден на ней */
+.image-field__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.image-field__btn:focus-within {
+  outline: 3px solid var(--accent-dark);
+  outline-offset: 2px;
+}
+
+.admin-btn:disabled {
+  opacity: 0.7;
+  cursor: progress;
 }
 
 /* Списки */
@@ -397,6 +444,19 @@ textarea.field__input {
 @media (max-width: 800px) {
   .layout {
     grid-template-columns: 1fr;
+  }
+
+  .image-field {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .image-field__preview {
+    width: 100%;
+  }
+
+  .image-field--alpha .image-field__preview {
+    width: 160px;
   }
 
   .sidenav {

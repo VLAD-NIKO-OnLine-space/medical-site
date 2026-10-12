@@ -1,13 +1,7 @@
 const form = document.querySelector("[data-editor]");
-const icons = JSON.parse(document.getElementById("icons-data").textContent);
 const dirtyNote = document.querySelector("[data-dirty-note]");
 let dirty = false;
 let uid = 0;
-
-const svg = (d) =>
-  d
-    ? `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`
-    : "";
 
 const markDirty = () => {
   dirty = true;
@@ -16,11 +10,16 @@ const markDirty = () => {
 
 form.addEventListener("input", markDirty);
 
+// картинка: сразу показываем выбранный файл вместо текущего, на сайт он попадёт после «Сохранить»
 form.addEventListener("change", (e) => {
-  const select = e.target.closest("[data-icon-select]");
-  if (select) {
-    select.parentElement.querySelector(".field__icon-preview").innerHTML = svg(icons[select.value]);
-  }
+  const input = e.target.closest("[data-image-input]");
+  const file = input?.files[0];
+  if (!file) return;
+  const field = input.closest(".image-field");
+  const preview = field.querySelector("[data-image-preview]");
+  if (preview.src.startsWith("blob:")) URL.revokeObjectURL(preview.src);
+  preview.src = URL.createObjectURL(file);
+  field.querySelector("[data-image-name]").textContent = `Новая: ${file.name} (${(file.size / 1048576).toFixed(1)} МБ)`;
 });
 
 // списки: добавить, переместить, удалить элемент
@@ -58,8 +57,19 @@ form.addEventListener("submit", (e) => {
     return;
   }
   dirty = false;
+  // картинки нарезаются на сервере несколько секунд — показываем, что сохранение идёт
+  const btn = form.querySelector('[type="submit"]');
+  btn.disabled = true;
+  btn.lastChild.textContent = "Сохраняем…";
 });
 
 window.addEventListener("beforeunload", (e) => {
   if (dirty) e.preventDefault();
+});
+
+// вернулись назад после сохранения — кнопка снова рабочая
+window.addEventListener("pageshow", () => {
+  const btn = form.querySelector('[type="submit"]');
+  btn.disabled = false;
+  btn.lastChild.textContent = "Сохранить";
 });
