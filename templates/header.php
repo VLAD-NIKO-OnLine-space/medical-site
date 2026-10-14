@@ -4,7 +4,7 @@
 <div class="header__bar">
 <a href="/" class="header__logo">
 <?= logo_mark('header__logo-icon') ?>
-<span><?= e(content('site')['name']) ?></span>
+<?= logo_text() ?>
 </a>
 <nav class="header__nav" id="site-menu" aria-label="Основное меню">
 <p class="header__menu-cap" style="--i: 0" aria-hidden="true">Меню</p>

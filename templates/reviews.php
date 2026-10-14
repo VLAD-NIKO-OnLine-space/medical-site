@@ -17,8 +17,8 @@ $page['scripts'][] = '/assets/js/reviews.js';
 <h2 class="section-title" id="reviews-title"><?= e(typo($c['title'])) ?><?php if ($c['title_accent'] !== ''): ?><?= $sep ?><span class="text-accent"><?= e(typo($c['title_accent'])) ?></span><?php endif; ?></h2>
 </div>
 <div class="reviews__nav">
-<button type="button" class="reviews__arrow" data-reviews-prev aria-label="Предыдущие отзывы"><?= icon('arrow-left', 'chevron-left', 22) ?></button>
-<button type="button" class="reviews__arrow" data-reviews-next aria-label="Следующие отзывы"><?= icon('arrow-right', 'chevron-right', 22) ?></button>
+<button type="button" class="slider-arrow" data-reviews-prev aria-label="Предыдущие отзывы"><?= icon('arrow-left', 'chevron-left', 22) ?></button>
+<button type="button" class="slider-arrow" data-reviews-next aria-label="Следующие отзывы"><?= icon('arrow-right', 'chevron-right', 22) ?></button>
 </div>
 </div>
 <div class="reviews__slider swiper" data-reviews>

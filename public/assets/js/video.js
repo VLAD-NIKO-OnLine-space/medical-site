@@ -21,6 +21,7 @@ if (modal) {
       player.title = btn.getAttribute("aria-label");
     }
     player.src = videoSrc;
+    modal.setAttribute("aria-label", btn.getAttribute("aria-label") || "Видео");
     frame.replaceChildren(player);
     modal.showModal();
   });

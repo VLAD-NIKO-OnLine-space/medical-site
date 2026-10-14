@@ -29,6 +29,16 @@
   unicode-range: U+20-7E, U+A0, U+A9, U+AB, U+AE, U+B0, U+B7, U+BB, U+D7, U+401, U+410-44F, U+451, U+2013-2014, U+2018-2019, U+201C-201E, U+2022, U+2026, U+2032-2033, U+20BD, U+2116, U+2212;
 }
 
+/* Unbounded 500 — только для акцентной строки заголовка первого экрана.
+   Урезан до русского и латинского алфавита, цифр и знаков (18 КБ). */
+@font-face {
+  font-family: "Unbounded";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/unbounded-500.woff2") format("woff2");
+}
+
 /* запасной шрифт подогнан под размеры Inter — когда Inter догрузится, текст не прыгнет */
 @font-face {
   font-family: "Inter Fallback";
@@ -46,6 +56,8 @@
   --header-space: 110px;
   --header-top: 20px;
   --header-radius: 36px;
+  /* отступ между секциями: 48px на телефоне, до 88px на широком экране */
+  --section-space: clamp(48px, 5vw, 88px);
   --accent: #2cb3b0;
   --accent-dark: #127f80;
   --on-accent: #073a3b;
@@ -176,7 +188,7 @@ morph-icon {
     transform: none;
   }
 
-  .about__availability::before {
+  .author__availability::before {
     animation: none;
   }
 }
@@ -254,13 +266,29 @@ morph-icon {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 17px;
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  font-size: 22px;
   color: var(--text);
   text-decoration: none;
+}
+
+/* название в логотипе: «best» — Inter, «oncolog» — Unbounded с бирюзовым переливом, как выделения в заголовках */
+.logo-text {
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.logo-text__accent {
+  font-family: "Unbounded", "Inter", "Inter Fallback", sans-serif;
+  font-size: 0.9em;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--accent-dark);
+  background: linear-gradient(100deg, #0e6c6d 0%, var(--accent-dark) 30%, #1f9f9c 62%, var(--accent-dark) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .header__logo-icon {
@@ -443,15 +471,34 @@ morph-icon {
 }
 
 .hero__title {
-  margin: 0 0 24px;
-  font-size: clamp(40px, 5.2vw, 88px);
+  margin: 0 0 28px;
+  font-size: clamp(38px, 4.4vw, 76px);
   font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
 }
 
+.hero__title-accent {
+  display: block;
+  margin-top: 0.06em;
+  padding-bottom: 0.1em;
+  line-height: 1.12;
+}
+
+/* выделенная часть заголовков — широкий Unbounded с бирюзовым переливом; он крупнее Inter, поэтому кегль меньше.
+   clone — при переносе перелив идёт по каждой строке отдельно */
 .text-accent {
-  color: var(--accent);
+  font-family: "Unbounded", "Inter", "Inter Fallback", sans-serif;
+  font-size: 0.82em;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--accent-dark);
+  background: linear-gradient(100deg, #0e6c6d 0%, var(--accent-dark) 30%, #1f9f9c 62%, var(--accent-dark) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 .hero__text {
@@ -699,13 +746,13 @@ html.is-menu-open {
   letter-spacing: -0.02em;
 }
 
-/* О враче */
+/* О видеогиде */
 
 .about {
   position: relative;
   isolation: isolate;
   overflow: clip;
-  padding: 140px 0;
+  padding: var(--section-space) 0;
 }
 
 .about::before,
@@ -732,122 +779,15 @@ html.is-menu-open {
 
 .about__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
   align-items: start;
-  gap: 64px clamp(48px, 6vw, 112px);
+  gap: 48px clamp(48px, 6vw, 112px);
 }
 
-/* фото с карточкой врача остаётся на экране, пока читается длинный текст */
-.about__media {
+/* заголовок с тезисами остаётся на экране, пока читается длинный текст справа */
+.about__intro {
   position: sticky;
-  top: calc(var(--header-space) + 8px);
-  justify-self: end;
-  /* фото с карточкой помещается в экран: ширина ограничена высотой окна */
-  width: min(580px, 40vw, (100vh - var(--header-space) - 120px) * 0.8);
-  min-width: 300px;
-}
-
-.about__photo {
-  position: relative;
-  aspect-ratio: 4 / 5;
-}
-
-.about__photo img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: bottom center;
-}
-
-.about__monogram {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: clamp(96px, 12vw, 180px);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  color: rgba(18, 127, 128, 0.18);
-}
-
-.about__person {
-  position: relative;
-  /* по ширине фигуры врача на фото: отступы примерно по краям халата */
-  margin: -76px 9% 0;
-  padding: 16px 22px 18px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.58));
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  border-radius: 22px;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    0 16px 40px rgba(16, 74, 80, 0.14);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  backdrop-filter: blur(24px) saturate(160%);
-}
-
-.about__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
-  padding: 4px 10px 4px 8px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent-dark);
-  background: rgba(44, 179, 176, 0.14);
-}
-
-.about__badge svg {
-  width: 15px;
-  height: 15px;
-}
-
-.about__name {
-  font-size: clamp(18px, 1.4vw, 21px);
-  font-weight: 800;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
-
-.about__status {
-  margin-top: 2px;
-  font-size: 15px;
-  color: var(--muted);
-}
-
-.about__availability {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent-dark);
-}
-
-.about__availability::before {
-  content: "";
-  flex: none;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22b5aa;
-  animation: online-pulse 2s ease-out infinite;
-}
-
-@keyframes online-pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(34, 181, 170, 0.5);
-  }
-
-  70%,
-  100% {
-    box-shadow: 0 0 0 8px rgba(34, 181, 170, 0);
-  }
+  top: calc(var(--header-space) + 24px);
 }
 
 .about__lead {
@@ -860,7 +800,7 @@ html.is-menu-open {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin: 0 0 40px;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -899,7 +839,7 @@ html.is-menu-open {
 /* врезка с главной мыслью: зелёная полоса слева и мягко затухающая от неё заливка */
 .about__quote {
   position: relative;
-  margin: 48px 0;
+  margin: 40px 0;
   padding: 30px 40px 30px 36px;
   border-radius: 4px 0 0 4px;
   background:
@@ -936,13 +876,155 @@ html.is-menu-open {
   color: var(--text);
 }
 
+/* Информация об авторе: стеклянная панель, фигура врача стоит на нижнем крае */
+
+.author {
+  position: relative;
+  padding: 0 0 var(--section-space);
+}
+
+.author__panel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  align-items: end;
+  gap: 0 clamp(32px, 5vw, 96px);
+  padding: clamp(32px, 4vw, 64px) clamp(24px, 4vw, 72px) 0;
+  border: 1px solid var(--glass-border);
+  border-radius: 40px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.36));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    var(--shadow);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+}
+
+/* бирюзовое свечение за фигурой */
+.author__panel::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  bottom: -30%;
+  left: -10%;
+  width: 60%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(44, 179, 176, 0.34), rgba(44, 179, 176, 0) 68%);
+}
+
+.author__photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  max-width: 520px;
+}
+
+.author__photo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+}
+
+.author__monogram {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(96px, 12vw, 180px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: rgba(18, 127, 128, 0.18);
+}
+
+.author__info {
+  align-self: center;
+  padding-bottom: clamp(32px, 4vw, 64px);
+}
+
+.author__person {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.author__person > svg {
+  flex: none;
+  color: var(--accent-dark);
+}
+
+.author__name {
+  margin: 0;
+  font-size: clamp(22px, 1.8vw, 28px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.author__status {
+  margin: 2px 0 0;
+  color: var(--muted);
+}
+
+.author__availability {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accent-dark);
+}
+
+.author__availability::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22b5aa;
+  animation: online-pulse 2s ease-out infinite;
+}
+
+@keyframes online-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 181, 170, 0.5);
+  }
+
+  70%,
+  100% {
+    box-shadow: 0 0 0 8px rgba(34, 181, 170, 0);
+  }
+}
+
+.author__bio {
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(18, 127, 128, 0.14);
+}
+
+.author__bio p {
+  margin: 0 0 1.2em;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.author__bio p:last-child {
+  margin-bottom: 0;
+}
+
 /* Программа */
 
 .program {
   position: relative;
   isolation: isolate;
   overflow: clip;
-  padding: 140px 0;
+  padding: var(--section-space) 0;
 }
 
 /* без картинки остаётся мягкий бирюзовый фон */
@@ -997,14 +1079,186 @@ html.is-menu-open {
   color: var(--muted);
 }
 
+/* Главы программы: слайдер, карточки уходят за правый край экрана */
+
+.chapters {
+  margin-top: clamp(40px, 4vw, 64px);
+  overflow: visible;
+}
+
+.chapters .swiper-wrapper {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* пока слайдер не запустился — тот же ряд карточек, без скачка при запуске */
+.chapters:not(.swiper-initialized) .swiper-wrapper {
+  gap: 24px;
+}
+
+.chapter {
+  display: flex;
+  flex-direction: column;
+  width: clamp(300px, 24vw, 400px);
+  height: auto;
+  min-height: 420px;
+  padding: 32px 32px 28px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.5));
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 32px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 16px 40px rgba(16, 74, 80, 0.08);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s;
+}
+
+@media (hover: hover) {
+  .chapter:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      0 24px 50px rgba(16, 74, 80, 0.14);
+  }
+}
+
+.chapter__label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.chapter__num {
+  align-self: flex-start;
+  margin: 4px 0 0;
+  padding-bottom: 28px;
+  font-family: "Unbounded", "Inter", "Inter Fallback", sans-serif;
+  font-size: clamp(64px, 5.6vw, 96px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--accent-dark);
+  background: linear-gradient(100deg, #0e6c6d 0%, var(--accent-dark) 30%, #1f9f9c 62%, var(--accent-dark) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.chapter__title {
+  margin: 0;
+  padding-top: 24px;
+  border-top: 1px solid rgba(18, 127, 128, 0.16);
+  font-size: clamp(21px, 1.6vw, 25px);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.chapter__text {
+  margin: 10px 0 0;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.chapter__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+.chapter__play,
+.chapter__soon,
+.chapter__duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px 0 12px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.chapter__play {
+  border: 0;
+  color: var(--accent-dark);
+  background: rgba(44, 179, 176, 0.14);
+  cursor: pointer;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.chapter__play:hover {
+  color: var(--on-accent);
+  background: var(--accent);
+}
+
+.chapter__play:focus-visible {
+  outline: 3px solid var(--accent-dark);
+  outline-offset: 2px;
+}
+
+.chapter__soon,
+.chapter__duration {
+  color: var(--muted);
+  background: rgba(18, 32, 33, 0.05);
+}
+
+/* под слайдером: полоса прогресса и стрелки */
+.chapters__controls {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-top: 40px;
+}
+
+.chapters__progress {
+  position: relative;
+  flex: 1;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(16, 74, 80, 0.12);
+}
+
+.chapters__progress .swiper-pagination-progressbar-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+  transform-origin: left top;
+}
+
+.chapters__nav {
+  display: flex;
+  flex: none;
+  gap: 12px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .chapters .swiper-wrapper {
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
 /* Отзывы */
 
 .reviews {
   position: relative;
   isolation: isolate;
   overflow-x: clip;
-  /* снизу меньше: следом секция доступа со своим отступом сверху */
-  padding: 140px 0 40px;
+  /* снизу немного места под тени карточек, остальное — отступ сверху у секции доступа */
+  padding: var(--section-space) 0 24px;
 }
 
 .reviews::before {
@@ -1037,7 +1291,7 @@ html.is-menu-open {
   gap: 12px;
 }
 
-.reviews__arrow {
+.slider-arrow {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1062,19 +1316,19 @@ html.is-menu-open {
     translate 0.25s;
 }
 
-.reviews__arrow:hover {
+.slider-arrow:hover {
   color: var(--on-accent);
   background: var(--accent);
   box-shadow: 0 12px 28px rgba(44, 179, 176, 0.4);
   translate: 0 -2px;
 }
 
-.reviews__arrow:focus-visible {
+.slider-arrow:focus-visible {
   outline: 3px solid var(--accent-dark);
   outline-offset: 3px;
 }
 
-.reviews__arrow.swiper-button-disabled {
+.slider-arrow.swiper-button-disabled {
   opacity: 0.4;
   pointer-events: none;
 }
@@ -1264,8 +1518,8 @@ html.is-menu-open {
   isolation: isolate;
   /* свечение может уходить за секцию вниз и вверх — без резкой границы */
   overflow-x: clip;
-  /* снизу меньше: следом идут вопросы со своим отступом сверху */
-  padding: 120px 0 40px;
+  /* сверху и снизу по 24px отдано соседям под тени — в сумме между секциями ровно --section-space */
+  padding: calc(var(--section-space) - 24px) 0 24px;
 }
 
 /* бирюзовое свечение за карточкой с ценой */
@@ -1476,7 +1730,7 @@ html.is-menu-open {
   position: relative;
   isolation: isolate;
   overflow: clip;
-  padding: 88px 0;
+  padding: var(--section-space) 0;
   background: var(--mint);
 }
 
@@ -1561,6 +1815,61 @@ html.is-menu-open {
   color: var(--muted);
 }
 
+/* почта поддержки — стеклянная кнопка-ссылка */
+.contact-card__email {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 10px;
+  max-width: 100%;
+  margin: 0 0 22px;
+  padding: 12px 20px 12px 16px;
+  border: 1px solid rgba(44, 179, 176, 0.35);
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--accent-dark);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  background: rgba(44, 179, 176, 0.1);
+  transition:
+    color 0.25s,
+    background-color 0.25s,
+    border-color 0.25s;
+}
+
+.contact-card__email svg {
+  flex: none;
+}
+
+.contact-card__email:hover {
+  color: var(--on-accent);
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.contact-card__email:focus-visible {
+  outline: 3px solid var(--accent-dark);
+  outline-offset: 3px;
+}
+
+/* почта и ссылки внутри текстов из админки */
+.faq__answer a,
+.doc__text a,
+.contact-card__text a {
+  font-weight: 600;
+  color: var(--accent-dark);
+  text-decoration-color: rgba(18, 127, 128, 0.35);
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
+.faq__answer a:hover,
+.doc__text a:hover,
+.contact-card__text a:hover {
+  text-decoration-color: currentColor;
+}
+
 .contact-card__note {
   margin: auto 0 0;
   padding-top: 14px;
@@ -1580,7 +1889,7 @@ html.is-menu-open {
   position: relative;
   isolation: isolate;
   overflow: clip;
-  padding: 120px 0 140px;
+  padding: calc(var(--section-space) - 24px) 0 var(--section-space);
 }
 
 .faq::before {
@@ -1734,11 +2043,7 @@ html.is-menu-open {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  font-size: 24px;
   color: var(--text);
   text-decoration: none;
 }
@@ -1809,6 +2114,224 @@ html.is-menu-open {
 }
 
 /* Адаптив */
+
+/* Документы (условия покупки): оглавление слева прилипает, текст на стеклянной панели */
+
+.doc {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+  padding: 48px 0 var(--section-space);
+}
+
+.doc::before,
+.doc::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 720px;
+  height: 720px;
+  border-radius: 50%;
+}
+
+.doc::before {
+  top: -160px;
+  left: -260px;
+  background: radial-gradient(circle, rgba(44, 179, 176, 0.26), rgba(44, 179, 176, 0) 70%);
+}
+
+.doc::after {
+  top: 40%;
+  right: -280px;
+  background: radial-gradient(circle, rgba(190, 215, 240, 0.55), rgba(190, 215, 240, 0) 70%);
+}
+
+.doc__head {
+  margin-bottom: clamp(40px, 4vw, 64px);
+}
+
+.doc__title {
+  margin: 0;
+  font-size: clamp(40px, 4.4vw, 72px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.doc__updated {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.doc__updated svg {
+  color: var(--accent-dark);
+}
+
+.doc__intro {
+  max-width: 860px;
+  margin: 24px 0 0;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.doc__grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(32px, 4vw, 64px);
+}
+
+.doc__toc {
+  position: sticky;
+  top: calc(var(--header-space) + 24px);
+  padding: 28px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 28px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.45));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 16px 40px rgba(16, 74, 80, 0.08);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+}
+
+.doc__toc-title {
+  margin: 0 0 12px;
+  padding: 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.doc__toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.doc__toc a {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--text);
+  text-decoration: none;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.doc__toc a span {
+  flex: none;
+  min-width: 1.6em;
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+
+.doc__toc a:hover {
+  color: var(--accent-dark);
+  background: rgba(44, 179, 176, 0.12);
+}
+
+.doc__toc a:focus-visible {
+  outline: 3px solid var(--accent-dark);
+  outline-offset: 1px;
+}
+
+.doc__body {
+  padding: clamp(28px, 4vw, 64px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 36px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.55));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    var(--shadow);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+}
+
+.doc__section {
+  scroll-margin-top: calc(var(--header-space) + 24px);
+}
+
+.doc__section + .doc__section {
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(18, 127, 128, 0.14);
+}
+
+.doc__section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 0 0 20px;
+  font-size: clamp(24px, 2vw, 30px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+/* номер раздела — тем же шрифтом с переливом, что выделения в заголовках */
+.doc__num {
+  flex: none;
+  font-family: "Unbounded", "Inter", "Inter Fallback", sans-serif;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--accent-dark);
+  background: linear-gradient(100deg, #0e6c6d 0%, var(--accent-dark) 30%, #1f9f9c 62%, var(--accent-dark) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.doc__text {
+  max-width: 900px;
+  color: var(--muted);
+}
+
+.doc__text p {
+  margin: 0 0 1em;
+  line-height: 1.7;
+}
+
+.doc__text ul {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 1.2em;
+  padding: 0;
+  list-style: none;
+}
+
+.doc__text li {
+  position: relative;
+  padding-left: 26px;
+  font-size: 20px;
+  line-height: 1.6;
+}
+
+.doc__text li::before {
+  content: "";
+  position: absolute;
+  top: 0.68em;
+  left: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(44, 179, 176, 0.16);
+}
+
+.doc__text > :last-child {
+  margin-bottom: 0;
+}
 
 @media (max-width: 1240px) {
   .reviews__slider:not(.swiper-initialized) .reviews__slide {
@@ -1951,6 +2474,14 @@ html.is-menu-open {
 }
 
 @media (max-width: 1024px) {
+  .doc__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .doc__toc {
+    position: static;
+  }
+
   .hero__inner {
     grid-template-columns: 1fr;
   }
@@ -1987,18 +2518,74 @@ html.is-menu-open {
     translate: none;
   }
 
-  .about__media {
+  .about__intro {
     position: static;
-    order: -1;
+  }
+
+  .author__panel {
+    grid-template-columns: 1fr;
+  }
+
+  .author__photo {
+    order: 1;
     justify-self: center;
     width: 100%;
-    min-width: 0;
-    max-width: 480px;
+    max-width: 420px;
   }
 
 }
 
 @media (max-width: 640px) {
+  .doc {
+    padding-top: 32px;
+  }
+
+  .doc__toc {
+    padding: 20px 14px;
+    border-radius: 22px;
+  }
+
+  /* на телефоне текст без стеклянной подложки — во всю ширину контейнера */
+  .doc__body {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .doc__section + .doc__section {
+    margin-top: 32px;
+    padding-top: 32px;
+  }
+
+  .doc__text li {
+    font-size: 18px;
+  }
+
+  .chapters:not(.swiper-initialized) .swiper-wrapper {
+    gap: 16px;
+  }
+
+  .chapter {
+    width: min(84vw, 340px);
+    min-height: 380px;
+    padding: 26px 24px 24px;
+    border-radius: 26px;
+  }
+
+  .chapters__controls {
+    gap: 20px;
+    margin-top: 28px;
+  }
+
+  .chapters__nav .slider-arrow {
+    width: 48px;
+    height: 48px;
+  }
+
   :root {
     --header-space: 100px;
   }
@@ -2074,14 +2661,6 @@ html.is-menu-open {
     flex-wrap: wrap;
   }
 
-  .about {
-    padding: 80px 0;
-  }
-
-  .faq {
-    padding: 72px 0 88px;
-  }
-
   .footer__panel {
     padding: 40px 0 24px;
   }
@@ -2100,22 +2679,6 @@ html.is-menu-open {
   .footer__bottom {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .program {
-    padding: 80px 0;
-  }
-
-  .reviews {
-    padding: 80px 0 24px;
-  }
-
-  .access {
-    padding: 80px 0 24px;
-  }
-
-  .contacts {
-    padding: 64px 0;
   }
 
   .contacts .section-title {
@@ -2222,9 +2785,12 @@ html.is-menu-open {
     padding: 0 0 22px;
   }
 
-  .about__person {
-    margin: -56px 0 0;
-    padding: 14px 18px 16px;
+  .author__panel {
+    border-radius: 28px;
+  }
+
+  .author__person > svg {
+    display: none;
   }
 
   .about__quote {

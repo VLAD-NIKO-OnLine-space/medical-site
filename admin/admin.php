@@ -190,6 +190,7 @@ function list_html(array $f, array $items, string $name, array $errors): string
     };
     $html = '<div class="field field--wide list" data-list>'
         . '<p class="field__label">' . e($f['label']) . '</p>'
+        . (isset($f['hint']) ? '<p class="field__hint">' . e($f['hint']) . '</p>' : '')
         . (isset($errors[$name]) ? '<p class="field__error">' . e($errors[$name]) . '</p>' : '')
         . '<div class="list__items" data-list-items>';
     foreach (array_values($items) as $i => $item) {

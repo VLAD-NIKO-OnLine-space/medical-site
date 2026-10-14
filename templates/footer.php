@@ -4,7 +4,7 @@
 <div class="footer__panel">
 <div class="footer__top">
 <div class="footer__brand">
-<a href="/" class="footer__logo"><?= logo_mark('footer__logo-icon', 36) ?><span><?= e(content('site')['name']) ?></span></a>
+<a href="/" class="footer__logo"><?= logo_mark('footer__logo-icon', 36) ?><?= logo_text() ?></a>
 <?php if ($f['tagline'] !== ''): ?>
 <p class="footer__tagline"><?= nl2br(e(typo($f['tagline'])), false) ?></p>
 <?php endif; ?>

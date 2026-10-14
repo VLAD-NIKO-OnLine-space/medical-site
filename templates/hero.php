@@ -7,7 +7,7 @@
 <?php if ($c['eyebrow'] !== ''): ?>
 <div class="eyebrow"><?= e($c['eyebrow']) ?></div>
 <?php endif; ?>
-<h1 class="hero__title"><?= e(typo($c['title'])) ?><?php if ($c['title_accent'] !== ''): ?><br> <span class="text-accent"><?= e(typo($c['title_accent'])) ?></span><?php endif; ?></h1>
+<h1 class="hero__title"><?= e(typo($c['title'])) ?><?php if ($c['title_accent'] !== ''): ?> <span class="text-accent hero__title-accent"><?= e(typo($c['title_accent'])) ?></span><?php endif; ?></h1>
 <?php if ($c['text'] !== ''): ?>
 <p class="hero__text"><?= nl2br(e(typo($c['text'])), false) ?></p>
 <?php endif; ?>
@@ -34,10 +34,4 @@
 </div>
 </div>
 </div>
-<?php if ($video): ?>
-<dialog class="video-modal" data-video-modal aria-label="<?= e($c['video_label'] !== '' ? $c['video_label'] : 'Видео') ?>">
-<button class="video-modal__close" type="button" data-video-close aria-label="Закрыть видео"><?= icon('x', '', 22) ?></button>
-<div class="video-modal__frame" data-video-frame></div>
-</dialog>
-<?php endif; ?>
 </section>

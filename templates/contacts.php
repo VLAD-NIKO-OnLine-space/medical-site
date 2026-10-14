@@ -18,6 +18,9 @@ $cardIcons = ['headset', 'building'];
 <h3 class="contact-card__title"><?= e(typo($item['title'])) ?></h3>
 </div>
 <?= paragraphs($item['text'], 'contact-card__text') ?>
+<?php if (($item['email'] ?? '') !== ''): ?>
+<a class="contact-card__email" href="mailto:<?= e($item['email']) ?>"><?= icon('mail', '', 20) ?><?= e($item['email']) ?></a>
+<?php endif; ?>
 <?php if ($item['note'] !== ''): ?>
 <p class="contact-card__note"><small><?= e(typo($item['note'])) ?></small></p>
 <?php endif; ?>

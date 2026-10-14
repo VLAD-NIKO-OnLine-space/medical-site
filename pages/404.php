@@ -1,5 +1,5 @@
 <?php
-$page['title'] = 'Страница не найдена — Название сайта';
+$page['title'] = 'Страница не найдена — ' . content('site')['name'];
 $page['description'] = 'Такой страницы нет.';
 $page['robots'] = 'noindex, follow';
 ?>

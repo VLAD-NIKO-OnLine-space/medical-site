@@ -1,5 +1,5 @@
 <?php
 return [
-    'domain' => 'https://example.com',
+    'domain' => 'https://bestoncolog.ru',
     'lang' => 'ru',
 ];

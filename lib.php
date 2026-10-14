@@ -21,7 +21,15 @@ function site(): array
 function typo(string $s): string
 {
     $s = preg_replace('/ ([—–])/u', "\u{00A0}$1", $s);
+    // число не отрывается от следующего слова («10 дней»), «№» — от номера
+    $s = preg_replace('/(\d|№) (?=[\p{L}\d])/u', "$1\u{00A0}", $s);
     return preg_replace('/(?<![\p{L}\d])(\p{L}{1,2}) (?=[\p{L}\d«])/u', "$1\u{00A0}", $s);
+}
+
+/** Адреса почты в уже экранированном тексте — ссылками mailto. */
+function link_emails(string $html): string
+{
+    return preg_replace('/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/u', '<a href="mailto:$0">$0</a>', $html);
 }
 
 /** Текст из админки в абзацы: пустая строка — новый <p>, перенос строки — <br>. */
@@ -30,13 +38,52 @@ function paragraphs(string $text, string $class = ''): string
     $out = '';
     foreach (preg_split('/\n\s*\n/', trim($text)) as $p) {
         if (trim($p) !== '') {
-            $out .= '<p' . ($class !== '' ? ' class="' . $class . '"' : '') . '>' . nl2br(e(typo(trim($p))), false) . "</p>\n";
+            $out .= '<p' . ($class !== '' ? ' class="' . $class . '"' : '') . '>' . link_emails(nl2br(e(typo(trim($p))), false)) . "</p>\n";
         }
     }
     return $out;
 }
 
-/** Инициалы из ФИО для заглушки вместо фото: «Дмитриенко Алексей» → «ДА». */
+/** Текст документа из админки: пустая строка — новый абзац, строки с «— » или «- » в начале — пункты списка. */
+function rich_text(string $text): string
+{
+    $out = '';
+    foreach (preg_split('/\n\s*\n/', trim($text)) as $block) {
+        $lines = preg_split('/\n/', trim($block));
+        $para = [];
+        $list = [];
+        $flush = function () use (&$para, &$list, &$out) {
+            if ($para) {
+                $out .= '<p>' . link_emails(implode('<br>', array_map(fn($l) => e(typo($l)), $para))) . "</p>\n";
+            }
+            if ($list) {
+                $out .= "<ul>\n" . implode('', array_map(fn($l) => '<li>' . link_emails(e(typo($l))) . "</li>\n", $list)) . "</ul>\n";
+            }
+            $para = $list = [];
+        };
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '') {
+                continue;
+            }
+            if (preg_match('/^[—–\-•]\s+(.+)$/u', $line, $m)) {
+                if ($para) {
+                    $flush();
+                }
+                $list[] = $m[1];
+            } else {
+                if ($list) {
+                    $flush();
+                }
+                $para[] = $line;
+            }
+        }
+        $flush();
+    }
+    return $out;
+}
+
+/** Инициалы из ФИО для заглушки вместо фото: «Дмитренко Алексей» → «ДА». */
 function initials(string $name): string
 {
     preg_match_all('/(?<!\p{L})\p{L}/u', $name, $m);
@@ -47,6 +94,17 @@ function initials(string $name): string
 function logo_mark(string $class, int $size = 32): string
 {
     return '<svg class="' . $class . '" width="' . $size . '" height="' . $size . '" viewBox="0 0 32 32" aria-hidden="true"><path d="M12 4h8v8h8v8h-8v8h-8v-8H4v-8h8z" fill="currentColor"/><path d="M6 16h5l2-4 4 8 2-4h7" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
+/** Название в логотипе: выделенная часть (из админки) — бирюзовым шрифтом, как выделения в заголовках. */
+function logo_text(): string
+{
+    $s = content('site');
+    // жадное (.*) — выделяется последнее вхождение, регистр не важен
+    if ($s['logo_accent'] === '' || !preg_match('/^(.*)(' . preg_quote($s['logo_accent'], '/') . ')(.*)$/isu', $s['name'], $m)) {
+        return '<span class="logo-text">' . e($s['name']) . '</span>';
+    }
+    return '<span class="logo-text">' . e($m[1]) . '<span class="logo-text__accent">' . e($m[2]) . '</span>' . e($m[3]) . '</span>';
 }
 
 function icons(): array
