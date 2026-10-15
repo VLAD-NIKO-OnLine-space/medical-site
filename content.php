@@ -105,7 +105,7 @@ return [
             'title' => ['label' => 'Заголовок H2', 'type' => 'text', 'default' => 'Информация'],
             'title_accent' => ['label' => 'Заголовок H2: цветная часть (в той же строке)', 'type' => 'text', 'optional' => true, 'default' => 'об авторе'],
             'name' => ['label' => 'ФИО врача', 'type' => 'text', 'default' => 'Дмитренко Алексей Петрович'],
-            'status' => ['label' => 'Статус (должность, регалии)', 'type' => 'text', 'optional' => true, 'hint' => 'Строка под ФИО. Пусто — не показывается', 'default' => ''],
+            'status' => ['label' => 'Статус (должность, регалии)', 'type' => 'text', 'optional' => true, 'hint' => 'Строка под ФИО. Пусто — не показывается', 'default' => 'Онколог-маммолог'],
             'availability' => ['label' => 'Индикатор «открыт»', 'type' => 'text', 'optional' => true, 'hint' => 'Строка с бирюзовой точкой под статусом. Пусто — не показывается', 'default' => ''],
             'photo' => [
                 'label' => 'Фото врача',
