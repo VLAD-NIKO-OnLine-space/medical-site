@@ -1,4 +1,12 @@
-<?php $c = content('faq'); ?>
+<?php
+$c = content('faq');
+// почта и реквизиты в ответах — из «Подвала» ({email}, {phone} и т. д.)
+$tokens = seller_tokens();
+foreach ($c['items'] as &$item) {
+    $item['answer'] = strtr($item['answer'], $tokens);
+}
+unset($item);
+?>
 <section class="faq" id="voprosy" aria-labelledby="faq-title">
 <div class="container">
 <div class="faq__head">

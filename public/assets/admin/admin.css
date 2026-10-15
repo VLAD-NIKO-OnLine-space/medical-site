@@ -1,4 +1,7 @@
 :root {
+  /* тот же контейнер, что у сайта: 1640px и поля по 20px */
+  --container: 1640px;
+  --gutter: 20px;
   --accent: #2cb3b0;
   --accent-hover: #1f9c9a;
   --accent-dark: #127f80;
@@ -105,7 +108,8 @@ svg {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
+  /* содержимое шапки — по краям контейнера, фон — во всю ширину */
+  padding: 10px max(var(--gutter), (100% - var(--container)) / 2);
   background: rgba(255, 255, 255, 0.75);
   border-bottom: 1px solid var(--line);
   -webkit-backdrop-filter: blur(16px);
@@ -113,7 +117,7 @@ svg {
 }
 
 .topbar__title {
-  margin: 0 auto 0 0;
+  margin: 0 16px 0 0;
   font-weight: 700;
 }
 
@@ -149,11 +153,11 @@ svg {
 
 .layout {
   display: grid;
-  grid-template-columns: 200px minmax(0, 1fr);
-  gap: 24px;
-  max-width: 1200px;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 32px;
+  max-width: calc(var(--container) + 2 * var(--gutter));
   margin: 0 auto;
-  padding: 24px 20px 0;
+  padding: 24px var(--gutter) 0;
 }
 
 .sidenav {
@@ -171,8 +175,33 @@ svg {
   text-decoration: none;
 }
 
+.sidenav a {
+  position: relative;
+  transition:
+    color 0.2s,
+    background-color 0.2s;
+}
+
 .sidenav a:hover {
   background: rgba(44, 179, 176, 0.15);
+}
+
+/* блок, который сейчас на экране */
+.sidenav a[aria-current] {
+  font-weight: 600;
+  color: var(--accent-dark);
+  background: rgba(44, 179, 176, 0.18);
+}
+
+.sidenav a[aria-current]::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 0;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--accent);
 }
 
 .editor {
@@ -219,9 +248,12 @@ svg {
   font-size: 20px;
 }
 
+/* короткие поля — столько колонок, сколько влезает (на широком экране три), тексты и списки — во всю ширину */
 .panel__fields {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  /* поля в ряду — по нижнему краю: длинная подпись в две строки не сдвигает соседей */
+  align-items: end;
   gap: 16px 20px;
 }
 
@@ -339,11 +371,6 @@ textarea.field__input {
   outline-offset: 2px;
 }
 
-.admin-btn:disabled {
-  opacity: 0.7;
-  cursor: progress;
-}
-
 /* Списки */
 
 .list__items {
@@ -362,7 +389,7 @@ textarea.field__input {
 
 .list__fields {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   gap: 12px 16px;
   flex: 1;
   min-width: 0;
@@ -417,26 +444,106 @@ textarea.field__input {
   background: rgba(44, 179, 176, 0.12);
 }
 
-/* Панель сохранения */
+/* Вкладки разделов в шапке */
 
-.savebar {
-  position: sticky;
-  bottom: 0;
+.tabs {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 16px;
-  margin: 0 -20px;
-  padding: 14px 20px;
-  background: rgba(241, 249, 249, 0.85);
-  border-top: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  gap: 4px;
+  margin-right: auto;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(16, 74, 80, 0.06);
 }
 
-.savebar__status {
-  color: var(--accent-dark);
+.tabs__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 999px;
   font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.tabs__link:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.tabs__link[aria-current="page"] {
+  font-weight: 700;
+  color: var(--accent-dark);
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(16, 74, 80, 0.12);
+}
+
+.tabs__link:focus-visible {
+  outline: 3px solid var(--accent-dark);
+  outline-offset: 2px;
+}
+
+.list,
+.field__input {
+  scroll-margin-top: 120px;
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+/* не «требует внимания», а просто число */
+.badge.badge--muted {
+  color: var(--accent-dark);
+  background: rgba(44, 179, 176, 0.18);
+}
+
+.field__label:empty {
+  display: none;
+}
+
+.panel__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.panel__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--accent-dark);
+  text-decoration: none;
+}
+
+.panel__link:hover {
+  text-decoration: underline;
+}
+
+/* Сохранение — в шапке */
+
+.topbar__status {
+  margin-right: 8px;
+  font-weight: 500;
+  color: var(--accent-dark);
+}
+
+.topbar__save {
+  margin-right: 8px;
+}
+
+.topbar__save:disabled {
+  opacity: 0.45;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.topbar__save:disabled:hover {
+  background: var(--accent);
 }
 
 /* Адаптив */
@@ -481,4 +588,159 @@ textarea.field__input {
   .topbar__title span {
     display: none;
   }
+
+  /* вкладки — второй строкой во всю ширину */
+  .topbar {
+    flex-wrap: wrap;
+  }
+
+  .topbar__title {
+    margin-right: auto;
+  }
+
+  .tabs {
+    order: 1;
+    width: 100%;
+    margin: 6px 0 0;
+    overflow-x: auto;
+  }
+
+  .tabs__link {
+    flex: 1;
+    justify-content: center;
+    padding: 7px 10px;
+  }
+
+  /* узкий экран: у ссылок только иконки, о несохранённом говорит активная кнопка */
+  .topbar__link span,
+  .topbar__status {
+    display: none;
+  }
+
+  .topbar__save {
+    min-height: 40px;
+    margin-right: 0;
+    padding: 0 16px;
+  }
+}
+
+/* Модерация отзывов */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--danger);
+  vertical-align: 2px;
+}
+
+.moderation {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.moderation__item {
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.moderation__meta {
+  margin: 0 0 8px;
+  color: var(--muted);
+}
+
+.moderation__meta strong {
+  color: var(--text);
+}
+
+.moderation__text {
+  margin: 0 0 14px;
+}
+
+.moderation__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.moderation__empty {
+  margin: 0;
+  color: var(--muted);
+}
+
+.admin-btn--ghost {
+  color: var(--danger);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgba(192, 57, 43, 0.35);
+}
+
+.admin-btn--ghost:hover {
+  color: #fff;
+  background: var(--danger);
+}
+
+.badge[hidden] {
+  display: none;
+}
+
+/* «Обновить» в заголовке модерации */
+.panel__refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-dark);
+  background: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.panel__refresh:hover {
+  background: rgba(44, 179, 176, 0.12);
+}
+
+.panel__refresh:focus-visible {
+  outline: 3px solid var(--accent-dark);
+  outline-offset: 2px;
+}
+
+.panel__refresh:disabled {
+  cursor: progress;
+}
+
+.panel__refresh.is-loading svg {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.panel__updated {
+  flex-basis: 100%;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.panel__updated:empty {
+  display: none;
 }

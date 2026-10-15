@@ -1,7 +1,27 @@
 <?php
+// даты отзывов и время сохранения в админке — по Москве
+date_default_timezone_set('Europe/Moscow');
+
 function e(string $s): string
 {
     return htmlspecialchars($s, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+}
+
+/** Строка без управляющих символов и не длиннее $max; null — если не строка, битый UTF-8 или слишком длинная. */
+function clean_text(mixed $v, int $max, bool $multiline): ?string
+{
+    if (!is_string($v)) {
+        return null;
+    }
+    $v = str_replace("\r\n", "\n", $v);
+    if (!$multiline) {
+        $v = str_replace("\n", ' ', $v);
+    }
+    $v = preg_replace('/[\x00-\x08\x0B-\x1F\x7F]/u', '', trim($v));
+    if ($v === null || !preg_match('/^.{0,' . $max . '}$/su', $v)) {
+        return null;
+    }
+    return $v;
 }
 
 /** Адрес файла из public/ с меткой версии: после правки файла браузер скачает его заново, а не возьмёт старый из кэша. */
@@ -23,6 +43,9 @@ function typo(string $s): string
     $s = preg_replace('/ ([—–])/u', "\u{00A0}$1", $s);
     // число не отрывается от следующего слова («10 дней»), «№» — от номера
     $s = preg_replace('/(\d|№) (?=[\p{L}\d])/u', "$1\u{00A0}", $s);
+    // диапазон «4–5» не разрывается по тире (U+2060 — невидимый запрет переноса);
+    // только длинные тире: дефисы в телефонах «000-00-00» не трогаем, иначе номер не скопировать
+    $s = preg_replace('/(\d)([–—])(?=\d)/u', "$1\u{2060}$2\u{2060}", $s);
     return preg_replace('/(?<![\p{L}\d])(\p{L}{1,2}) (?=[\p{L}\d«])/u', "$1\u{00A0}", $s);
 }
 
@@ -81,6 +104,31 @@ function rich_text(string $text): string
         $flush();
     }
     return $out;
+}
+
+/** Реквизиты продавца из «Подвала» — для подстановки в документы вместо {seller}, {inn} и т. д.; пустое — «—». */
+function seller_tokens(): array
+{
+    $f = content('footer');
+    $out = [];
+    foreach (['seller', 'inn', 'ogrnip', 'city', 'email', 'phone'] as $k) {
+        $out['{' . $k . '}'] = $f[$k] !== '' ? $f[$k] : '—';
+    }
+    return $out;
+}
+
+/** Ссылка tel: из телефона в любом виде: «+7 (900) 123-45-67» → «+79001234567». */
+function tel_href(string $phone): string
+{
+    return 'tel:' . preg_replace('/[^\d+]/', '', $phone);
+}
+
+/** Склонение по числу: plural(5, ['отзыв', 'отзыва', 'отзывов']) → «отзывов». */
+function plural(int $n, array $forms): string
+{
+    $n = abs($n) % 100;
+    $i = $n % 10;
+    return $forms[$n > 10 && $n < 20 ? 2 : ($i === 1 ? 0 : ($i >= 2 && $i <= 4 ? 1 : 2))];
 }
 
 /** Инициалы из ФИО для заглушки вместо фото: «Дмитренко Алексей» → «ДА». */
@@ -186,6 +234,8 @@ function db(): PDO
     $pdo->exec('CREATE TABLE IF NOT EXISTS content (block TEXT PRIMARY KEY, data TEXT NOT NULL, updated_at TEXT NOT NULL)');
     $pdo->exec('CREATE TABLE IF NOT EXISTS admins (login TEXT PRIMARY KEY, password_hash TEXT NOT NULL)');
     $pdo->exec('CREATE TABLE IF NOT EXISTS login_attempts (ip TEXT NOT NULL, at INTEGER NOT NULL)');
+    // отзывы с сайта ждут проверки здесь; после публикации или удаления строка стирается
+    $pdo->exec('CREATE TABLE IF NOT EXISTS review_queue (id INTEGER PRIMARY KEY AUTOINCREMENT, author TEXT NOT NULL, rating INTEGER NOT NULL, text TEXT NOT NULL, created_at INTEGER NOT NULL, ip TEXT NOT NULL)');
     return $pdo;
 }
 
@@ -257,6 +307,10 @@ function sitemap(): string
 {
     $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
     foreach (pages() as $url => $file) {
+        // страница входа закрыта от поисковиков (noindex) — в карту сайта не идёт
+        if ($url === '/vhod/') {
+            continue;
+        }
         $lastmod = date('c', filemtime($file));
         $xml .= '  <url><loc>' . e(site()['domain'] . $url) . "</loc><lastmod>$lastmod</lastmod></url>\n";
     }

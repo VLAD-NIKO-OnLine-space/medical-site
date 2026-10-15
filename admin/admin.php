@@ -3,15 +3,28 @@
 // Подключается из public/index.php для адресов /admin...
 
 const ADMIN_URL = '/admin/';
+// разделы админки: адрес → [группа блоков из content.php, название вкладки]
+const ADMIN_SECTIONS = [
+    '/admin/' => ['content', 'Контент сайта'],
+    '/admin/otzyvy/' => ['reviews', 'Отзывы'],
+    '/admin/stranicy/' => ['pages', 'Страницы'],
+];
 const LOGIN_LIMIT = 5;
 const LOGIN_WINDOW = 900;
 
 require __DIR__ . '/images.php';
+require __DIR__ . '/../review-queue.php';
 
-function admin_redirect(): never
+function admin_redirect(string $to = ADMIN_URL): never
 {
-    header('Location: ' . ADMIN_URL, true, 303);
+    header('Location: ' . $to, true, 303);
     exit;
+}
+
+/** Блоки схемы одного раздела админки. */
+function schema_group(string $group): array
+{
+    return array_filter(schema(), fn($b) => ($b['group'] ?? 'content') === $group);
 }
 
 function admin_login(string $login, string $password): ?string
@@ -35,23 +48,6 @@ function admin_login(string $login, string $password): ?string
     session_regenerate_id(true);
     $_SESSION['admin'] = $login;
     return null;
-}
-
-/** Строка без управляющих символов и не длиннее $max; null — если не строка, битый UTF-8 или слишком длинная. */
-function clean_text(mixed $v, int $max, bool $multiline): ?string
-{
-    if (!is_string($v)) {
-        return null;
-    }
-    $v = str_replace("\r\n", "\n", $v);
-    if (!$multiline) {
-        $v = str_replace("\n", ' ', $v);
-    }
-    $v = preg_replace('/[\x00-\x08\x0B-\x1F\x7F]/u', '', trim($v));
-    if ($v === null || !preg_match('/^.{0,' . $max . '}$/su', $v)) {
-        return null;
-    }
-    return $v;
 }
 
 function validate_field(array $f, mixed $v, string $name, array &$errors): mixed
@@ -100,11 +96,11 @@ function validate_field(array $f, mixed $v, string $name, array &$errors): mixed
     }
 }
 
-function validate_all(mixed $post): array
+function validate_all(mixed $post, array $blocks): array
 {
     $values = [];
     $errors = [];
-    foreach (schema() as $block => $b) {
+    foreach ($blocks as $block => $b) {
         foreach ($b['fields'] as $key => $f) {
             // картинку меняет только загрузка файла — из формы её значение не берём
             $values[$block][$key] = $f['type'] === 'image'
@@ -188,7 +184,7 @@ function list_html(array $f, array $items, string $name, array $errors): string
             . '<button type="button" class="tool tool--danger" data-list-remove aria-label="Удалить" title="Удалить">' . icon('trash', '', 18) . '</button>'
             . '</div></div>';
     };
-    $html = '<div class="field field--wide list" data-list>'
+    $html = '<div class="field field--wide list" id="list-' . trim(preg_replace('/[^a-z0-9]+/i', '-', $name), '-') . '" data-list>'
         . '<p class="field__label">' . e($f['label']) . '</p>'
         . (isset($f['hint']) ? '<p class="field__hint">' . e($f['hint']) . '</p>' : '')
         . (isset($errors[$name]) ? '<p class="field__error">' . e($errors[$name]) . '</p>' : '')
@@ -210,9 +206,11 @@ header('X-Robots-Tag: noindex, nofollow');
 header('Cache-Control: no-store');
 header('X-Frame-Options: DENY');
 
-if ($url !== ADMIN_URL) {
+if (!isset(ADMIN_SECTIONS[$url])) {
     admin_redirect();
 }
+[$group, $sectionTitle] = ADMIN_SECTIONS[$url];
+$blocks = schema_group($group);
 
 $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 $csrf = $_SESSION['csrf'];
@@ -231,19 +229,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'login') {
         $loginError = admin_login(trim((string) ($_POST['login'] ?? '')), (string) ($_POST['password'] ?? ''));
         if ($loginError === null) {
-            admin_redirect();
+            admin_redirect($url);
         }
     } elseif ($action === 'logout') {
         $_SESSION = [];
         session_destroy();
         admin_redirect();
+    } elseif ($action === 'review' && isset($_SESSION['admin'])) {
+        [$do, $id] = explode(':', (string) ($_POST['review'] ?? '')) + ['', 0];
+        $id = (int) $id;
+        if ($do === 'delete') {
+            review_delete($id);
+            $_SESSION['flash'] = 'Отзыв удалён.';
+        } else {
+            $_SESSION['flash'] = review_approve($id) ? 'Отзыв опубликован — он первый в разделе «Опубликованные».' : 'Этого отзыва уже нет в очереди.';
+        }
+        admin_redirect(ADMIN_URL . 'otzyvy/#moderation');
     } elseif ($action === 'save' && isset($_SESSION['admin'])) {
-        [$values, $errors] = validate_all($_POST['content'] ?? []);
+        // сохраняется только открытый раздел — блоки других разделов в форме не участвуют и не трогаются
+        [$values, $errors] = validate_all($_POST['content'] ?? [], $blocks);
         // картинки обрабатываем, только когда остальные поля в порядке, — иначе файл пришлось бы выбирать заново впустую
         $replaced = [];
         $created = [];
         if (!$errors) {
-            foreach (schema() as $block => $b) {
+            foreach ($blocks as $block => $b) {
                 foreach ($b['fields'] as $key => $f) {
                     if ($f['type'] === 'image' && ($img = upload_image($f, $block, $key, $errors))) {
                         $replaced[] = $values[$block][$key];
@@ -262,18 +271,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             db()->commit();
             array_map('delete_image', $replaced);
             $_SESSION['flash'] = 'Изменения сохранены в ' . date('H:i');
-            admin_redirect();
+            // в «Отзывах» возвращаемся в ту же панель
+            $pane = preg_replace('/[^a-z]/', '', (string) ($_POST['pane'] ?? ''));
+            admin_redirect($url . ($pane !== '' ? "#$pane" : ''));
         }
     }
 }
 
 if (!isset($_SESSION['admin'])) {
+    if (isset($_GET['part'])) {
+        http_response_code(401);
+        exit;
+    }
     require __DIR__ . '/views/login.php';
     exit;
 }
 
+// «Обновить» в модерации: свежая очередь без перезагрузки страницы
+if (($_GET['part'] ?? '') === 'moderation') {
+    $queue = review_queue();
+    ob_start();
+    require __DIR__ . '/views/moderation.php';
+    header('Content-Type: application/json; charset=utf-8');
+    exit(json_encode(['count' => count($queue), 'html' => ob_get_clean(), 'time' => date('H:i')], JSON_UNESCAPED_UNICODE));
+}
+
 if ($values === null) {
-    foreach (schema() as $block => $b) {
+    foreach ($blocks as $block => $b) {
         $values[$block] = content($block);
     }
 }

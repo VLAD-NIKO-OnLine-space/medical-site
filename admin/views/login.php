@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="<?= e(asset('/assets/admin/admin.css')) ?>">
 </head>
 <body class="admin admin--login">
-<form class="login" method="post" action="<?= ADMIN_URL ?>">
+<form class="login" method="post" action="<?= e($url) ?>">
 <h1 class="login__title">Вход в админку</h1>
 <?php if ($loginError): ?>
 <p class="alert alert--error" role="alert"><?= e($loginError) ?></p>

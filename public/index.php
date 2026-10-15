@@ -20,6 +20,11 @@ if ($url === '/robots.txt') {
     exit(robots());
 }
 
+if ($url === '/otzyv/') {
+    require __DIR__ . '/../review-queue.php';
+    review_endpoint();
+}
+
 if ($url === '/admin' || str_starts_with($url, '/admin/')) {
     require __DIR__ . '/../admin/admin.php';
     exit;

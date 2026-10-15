@@ -25,8 +25,7 @@ if ($c['chapters']) {
 <?php foreach ($c['chapters'] as $i => $ch): ?>
 <?php $video = video_embed($ch['video_url']); ?>
 <li class="chapter swiper-slide">
-<span class="chapter__label">Глава</span>
-<span class="chapter__num" aria-hidden="true"><?= sprintf('%02d', $i + 1) ?></span>
+<span class="chapter__label">Глава <span class="chapter__num"><?= sprintf('%02d', $i + 1) ?></span></span>
 <h3 class="chapter__title"><?= e(typo($ch['title'])) ?></h3>
 <?php if ($ch['text'] !== ''): ?>
 <p class="chapter__text"><?= e(typo($ch['text'])) ?></p>
@@ -46,7 +45,7 @@ if ($c['chapters']) {
 </ol>
 </div>
 <div class="chapters__controls">
-<div class="chapters__progress" data-chapters-progress></div>
+<div class="chapters__scrollbar" data-chapters-scrollbar></div>
 <div class="chapters__nav">
 <button type="button" class="slider-arrow" data-chapters-prev aria-label="Предыдущие главы"><?= icon('arrow-left', 'chevron-left', 22) ?></button>
 <button type="button" class="slider-arrow" data-chapters-next aria-label="Следующие главы"><?= icon('arrow-right', 'chevron-right', 22) ?></button>

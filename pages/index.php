@@ -9,4 +9,3 @@ $page['description'] = content('site')['home_description'];
 <?php require __DIR__ . '/../templates/reviews.php'; ?>
 <?php require __DIR__ . '/../templates/access.php'; ?>
 <?php require __DIR__ . '/../templates/faq.php'; ?>
-<?php require __DIR__ . '/../templates/contacts.php'; ?>
