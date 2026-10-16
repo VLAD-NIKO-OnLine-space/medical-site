@@ -4,7 +4,7 @@
 <div class="footer__panel">
 <?php
 // колонки подвала берут ссылки из шапки и карточки доступа — в одном месте меняется везде
-$nav = content('header')['nav'];
+$nav = nav_items();
 $docs = content('access')['docs'];
 $login = content('header');
 ?>
@@ -44,7 +44,7 @@ $login = content('header');
 <?php if ($f['phone'] !== ''): ?>
 <li><a class="footer__contact" href="<?= e(tel_href($f['phone'])) ?>"><?= icon('phone', '', 18) ?><?= e($f['phone']) ?></a></li>
 <?php endif; ?>
-<li><a class="footer__contact" href="<?= e($login['button_href']) ?>"><?= icon('door-closed', '', 18) ?>Вход в кабинет</a></li>
+<li><a class="footer__contact" href="<?= current_client() ? '/kabinet/' : e($login['button_href']) ?>"><?= icon(current_client() ? 'circle-user' : 'door-closed', '', 18) ?><?= current_client() ? 'Личный кабинет' : 'Вход в кабинет' ?></a></li>
 </ul>
 </div>
 </div>

@@ -744,3 +744,26 @@ textarea.field__input {
 .panel__updated:empty {
   display: none;
 }
+
+/* Клиенты во вкладке «Чаты» */
+.clients {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.clients__row {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.clients__off {
+  color: var(--danger);
+}
+
+.topbar__save[hidden] {
+  display: none;
+}

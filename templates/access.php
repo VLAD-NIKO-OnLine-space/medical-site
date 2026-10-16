@@ -1,4 +1,8 @@
 <?php
+// доступ уже куплен — секция покупки не нужна (у истёкшего доступа она остаётся: продлить)
+if (client_has_access(current_client())) {
+    return;
+}
 $c = content('access');
 // иконки пунктов карточки по порядку; для добавленных в админке пунктов — галочка
 $featureIcons = ['layers', 'repeat', 'monitor-smartphone'];

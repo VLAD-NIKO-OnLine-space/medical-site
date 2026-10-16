@@ -1,5 +1,6 @@
 <?php
 $c = content('program');
+$access = client_has_access(current_client());
 if ($c['chapters']) {
     $page['styles'][] = '/assets/js/vendor/swiper/swiper.min.css';
     $page['scripts'][] = '/assets/js/program.js';
@@ -40,9 +41,14 @@ if ($c['chapters']) {
 <?php if ($ch['duration'] !== ''): ?>
 <p class="chapter__duration"><?= icon('clock', '', 16) ?><?= e($ch['duration']) ?></p>
 <?php endif; ?>
-<?php /* «Обмен опытом» — чат главы для оплативших. Аккаунтов покупателей пока нет — всем открывается окно с предложением купить */ ?>
+<?php /* «Обмен опытом»: с доступом — чат главы (chat.js), без доступа — окно с предложением купить */ ?>
 <div class="chapter__exchange">
+<?php if ($access): ?>
+<?php $n = chat_count($i + 1); ?>
+<button class="chapter__chat chapter__chat--open" type="button" data-chat="<?= $i + 1 ?>" data-chapter="Глава <?= sprintf('%02d', $i + 1) ?> · <?= e($ch['title']) ?>" aria-haspopup="dialog"><?= icon('message-circle', '', 20) ?><span><?= e($c['exchange_label']) ?></span><?php if ($n): ?><span class="chapter__chat-count" aria-label="сообщений: <?= $n ?>"><?= $n ?></span><?php endif; ?></button>
+<?php else: ?>
 <button class="chapter__chat" type="button" data-exchange data-chapter="Глава <?= sprintf('%02d', $i + 1) ?> · <?= e($ch['title']) ?>" aria-haspopup="dialog"><?= icon('message-circle', '', 20) ?><span><?= e($c['exchange_label']) ?></span><?= icon('lock', '', 16) ?></button>
+<?php endif; ?>
 </div>
 </li>
 <?php endforeach; ?>
@@ -57,7 +63,9 @@ if ($c['chapters']) {
 </div>
 </div>
 <?php endif; ?>
-<?php if ($c['chapters']): ?>
+<?php if ($c['chapters'] && $access): ?>
+<?php require __DIR__ . '/chat-modal.php'; ?>
+<?php elseif ($c['chapters']): ?>
 <?php $a = content('access'); ?>
 <dialog class="review-modal exchange-modal" data-exchange-modal aria-labelledby="exchange-title" tabindex="-1">
 <button class="review-modal__close" type="button" data-exchange-close aria-label="Закрыть"><?= icon('x', '', 22) ?></button>

@@ -123,6 +123,16 @@ function tel_href(string $phone): string
     return 'tel:' . preg_replace('/[^\d+]/', '', $phone);
 }
 
+/** Пункты меню шапки (они же «Разделы» в подвале): у клиента с доступом без «Как получить доступ» — секции у него нет. */
+function nav_items(): array
+{
+    $nav = content('header')['nav'];
+    if (client_has_access(current_client())) {
+        $nav = array_values(array_filter($nav, fn($item) => $item['href'] !== '/#dostup'));
+    }
+    return $nav;
+}
+
 /** Склонение по числу: plural(5, ['отзыв', 'отзыва', 'отзывов']) → «отзывов». */
 function plural(int $n, array $forms): string
 {
@@ -290,6 +300,11 @@ function render(string $file, string $url): string
     $site = site();
     // секции могут дописать в styles/scripts свои файлы: страница рендерится раньше, чем head
     $page = ['title' => '', 'description' => '', 'robots' => 'index, follow', 'styles' => [], 'scripts' => []];
+    // страницы зависят от того, вошёл ли клиент: браузер каждый раз сверяется с сервером, прокси не хранят
+    if (!headers_sent() && PHP_SAPI !== 'cli') {
+        header('Cache-Control: private, no-cache');
+        header('Vary: Cookie');
+    }
     ob_start();
     require $file;
     $content = ob_get_clean();
@@ -307,8 +322,8 @@ function sitemap(): string
 {
     $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
     foreach (pages() as $url => $file) {
-        // страница входа закрыта от поисковиков (noindex) — в карту сайта не идёт
-        if ($url === '/vhod/') {
+        // вход и кабинет закрыты от поисковиков (noindex) — в карту сайта не идут
+        if ($url === '/vhod/' || $url === '/kabinet/') {
             continue;
         }
         $lastmod = date('c', filemtime($file));
@@ -341,3 +356,6 @@ function robots(): string
 {
     return "User-agent: *\nAllow: /\nDisallow: /admin/\n\nSitemap: " . site()['domain'] . "/sitemap.xml\n";
 }
+
+require __DIR__ . '/client.php';
+require __DIR__ . '/chat.php';

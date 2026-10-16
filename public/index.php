@@ -20,6 +20,17 @@ if ($url === '/robots.txt') {
     exit(robots());
 }
 
+if ($url === '/chat/') {
+    chat_endpoint();
+}
+if ($url === '/vyhod/') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && same_origin()) {
+        client_logout();
+    }
+    header('Location: /', true, 303);
+    exit;
+}
+
 if ($url === '/otzyv/') {
     require __DIR__ . '/../review-queue.php';
     review_endpoint();

@@ -19,7 +19,7 @@
 <?php /* кнопка снаружи формы редактора — привязана к ней атрибутом form; неактивна, пока ничего не изменено
    (после ошибки сохранения изменения на странице не сохранены — тогда активна сразу) */ ?>
 <span class="topbar__status" data-dirty-note<?= $errors ? '' : ' hidden' ?>>Есть несохранённые изменения</span>
-<button class="admin-btn topbar__save" type="submit" form="editor-form" data-save<?= $errors ? '' : ' disabled' ?>><?= icon('save', '', 18) ?><span>Сохранить</span></button>
+<button class="admin-btn topbar__save" type="submit" form="editor-form" data-save<?= $errors ? '' : ' disabled' ?><?= $group === 'chats' ? ' hidden' : '' ?>><?= icon('save', '', 18) ?><span>Сохранить</span></button>
 <a class="topbar__link" href="/" target="_blank" rel="noopener" aria-label="Открыть сайт"><?= icon('external-link', '', 18) ?><span>Открыть сайт</span></a>
 <form method="post" action="<?= ADMIN_URL ?>">
 <input type="hidden" name="csrf" value="<?= e($csrf) ?>">
@@ -39,7 +39,10 @@ if ($group === 'reviews') {
 ?>
 <div class="layout">
 <nav class="sidenav" aria-label="Блоки раздела «<?= e($sectionTitle) ?>»"<?= $pane ? ' data-panes' : '' ?>>
-<?php if ($group === 'reviews'): ?>
+<?php if ($group === 'chats'): ?>
+<a href="#chats">Сообщения</a>
+<a href="#clients">Клиенты</a>
+<?php elseif ($group === 'reviews'): ?>
 <?php foreach ($panes as $id => $title): ?>
 <a href="#<?= $id ?>" data-pane-link="<?= $id ?>"<?= $id === $pane ? ' aria-current="page"' : '' ?>><?= $title ?><?php if ($id === 'moderation'): ?> <span class="badge" data-queue-count<?= $queue ? '' : ' hidden' ?>><?= count($queue) ?></span><?php elseif ($id === 'published'): ?> <span class="badge badge--muted"><?= $published ?></span><?php endif; ?></a>
 <?php endforeach; ?>
@@ -60,6 +63,41 @@ if ($group === 'reviews') {
 <?php endif; ?>
 <?php if ($errors): ?>
 <p class="alert alert--error" role="alert">Не сохранено: исправьте поля, отмеченные красным.</p>
+<?php endif; ?>
+<?php if ($group === 'chats'): ?>
+<?php
+$messages = chat_recent();
+$chapters = content('program')['chapters'];
+$clients = client_db()->query('SELECT login, name, email, access_until, created_at FROM clients ORDER BY id DESC')->fetchAll();
+?>
+<section class="panel" id="chats">
+<h2 class="panel__title">Сообщения в «Обмене опытом» <span class="badge badge--muted"><?= count($messages) ?></span></h2>
+<p class="field__hint">Сообщения клиентов с доступом появляются в чатах глав сразу. Здесь последние 300 со всех глав — неподходящие можно удалить.</p>
+<?php if (!$messages): ?>
+<p class="moderation__empty">Сообщений пока нет.</p>
+<?php else: ?>
+<div class="moderation">
+<?php foreach ($messages as $m): ?>
+<article class="moderation__item">
+<p class="moderation__meta"><strong><?= e($m['name']) ?></strong> (<?= e($m['login']) ?>) · Глава <?= sprintf('%02d', $m['chapter']) ?><?= isset($chapters[$m['chapter'] - 1]) ? ' «' . e($chapters[$m['chapter'] - 1]['title']) . '»' : '' ?> · <?= date('d.m.y, H:i', (int) $m['created_at']) ?></p>
+<p class="moderation__text"><?= nl2br(e($m['text']), false) ?></p>
+<div class="moderation__actions">
+<button class="admin-btn admin-btn--ghost" type="submit" form="chat-actions" name="id" value="<?= (int) $m['id'] ?>" data-confirm="Удалить это сообщение? Это нельзя отменить."><?= icon('trash', '', 18) ?>Удалить</button>
+</div>
+</article>
+<?php endforeach; ?>
+</div>
+<?php endif; ?>
+</section>
+<section class="panel" id="clients">
+<h2 class="panel__title">Клиенты <span class="badge badge--muted"><?= count($clients) ?></span></h2>
+<p class="field__hint">Пока оплата не подключена, клиентов добавляют командой на сервере: <code>php client-user.php логин пароль "Имя" почта</code>, доступ бессрочный; закрыть доступ — то же с <code>--close</code>.</p>
+<div class="clients">
+<?php foreach ($clients as $cl): ?>
+<p class="clients__row"><strong><?= e($cl['name']) ?></strong> · <?= e($cl['login']) ?><?= $cl['email'] !== '' ? ' · ' . e($cl['email']) : '' ?> · <?= client_has_access($cl) ? 'доступ бессрочный' : '<span class="clients__off">доступ закрыт</span>' ?></p>
+<?php endforeach; ?>
+</div>
+</section>
 <?php endif; ?>
 <?php if ($group === 'reviews'): ?>
 <section class="panel" id="moderation" data-pane="moderation"<?= $pane === 'moderation' ? '' : ' hidden' ?>>
@@ -103,6 +141,10 @@ if ($group === 'reviews') {
 <?php endforeach; ?>
 </form>
 </div>
+<form id="chat-actions" method="post" action="<?= ADMIN_URL ?>chaty/" hidden>
+<input type="hidden" name="csrf" value="<?= e($csrf) ?>">
+<input type="hidden" name="action" value="chat_delete">
+</form>
 <form id="review-actions" method="post" action="<?= ADMIN_URL ?>otzyvy/" hidden>
 <input type="hidden" name="csrf" value="<?= e($csrf) ?>">
 <input type="hidden" name="action" value="review">

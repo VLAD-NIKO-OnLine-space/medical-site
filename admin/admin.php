@@ -8,6 +8,7 @@ const ADMIN_SECTIONS = [
     '/admin/' => ['content', 'Контент сайта'],
     '/admin/otzyvy/' => ['reviews', 'Отзывы'],
     '/admin/stranicy/' => ['pages', 'Страницы'],
+    '/admin/chaty/' => ['chats', 'Чаты'],
 ];
 const LOGIN_LIMIT = 5;
 const LOGIN_WINDOW = 900;
@@ -235,6 +236,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION = [];
         session_destroy();
         admin_redirect();
+    } elseif ($action === 'chat_delete' && isset($_SESSION['admin'])) {
+        chat_delete((int) ($_POST['id'] ?? 0));
+        $_SESSION['flash'] = 'Сообщение удалено.';
+        admin_redirect(ADMIN_URL . 'chaty/');
     } elseif ($action === 'review' && isset($_SESSION['admin'])) {
         [$do, $id] = explode(':', (string) ($_POST['review'] ?? '')) + ['', 0];
         $id = (int) $id;

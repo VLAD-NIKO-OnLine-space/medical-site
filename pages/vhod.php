@@ -1,15 +1,27 @@
 <?php
-// Вход клиента по почте и паролю. Аккаунтов клиентов пока нет (появятся с подключением оплаты),
-// поэтому вместо проверки пароля форма показывает сообщение из админки. Пароль нигде не сохраняется.
+// Вход клиента по логину или почте и паролю; вход запоминается на 30 дней (client.php).
 $c = content('login');
 $support = content('footer')['email'];
 $page['title'] = $c['meta_title'];
 $page['description'] = $c['lead'];
 $page['robots'] = 'noindex, follow';
 $page['scripts'][] = '/assets/js/login.js';
-$sent = ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST'; // при сборке в статику запроса нет
-$email = $sent ? (clean_text($_POST['email'] ?? '', 200, false) ?? '') : '';
-$notice = link_emails(nl2br(e(typo(strtr($c['notice'], seller_tokens()))), false));
+$error = null;
+$login = '';
+if (PHP_SAPI !== 'cli') { // при сборке в статику запроса нет
+    if (current_client()) {
+        header('Location: /kabinet/', true, 303);
+        exit;
+    }
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $login = clean_text($_POST['login'] ?? '', 200, false) ?? '';
+        $error = same_origin() ? client_login($login, (string) ($_POST['password'] ?? '')) : 'Обновите страницу и попробуйте ещё раз.';
+        if ($error === null) {
+            header('Location: /kabinet/', true, 303);
+            exit;
+        }
+    }
+}
 ?>
 <section class="login" aria-labelledby="login-title">
 <div class="container login__grid">
@@ -22,13 +34,15 @@ $notice = link_emails(nl2br(e(typo(strtr($c['notice'], seller_tokens()))), false
 <p class="login__lead"><?= nl2br(e(typo($c['lead'])), false) ?></p>
 <?php endif; ?>
 <form class="login__form" method="post" action="/vhod/" data-login-form>
-<div class="login__notice" role="status" data-login-notice<?= $sent ? '' : ' hidden' ?>>
+<?php if ($error !== null): ?>
+<div class="login__notice login__notice--error" role="alert">
 <?= icon('info', '', 20) ?>
-<p><?= $notice ?></p>
+<p><?= e($error) ?></p>
 </div>
+<?php endif; ?>
 <label class="login__field">
-<span class="login__label">Почта</span>
-<input class="login__input" type="email" name="email" autocomplete="email" inputmode="email" placeholder="you@mail.ru" value="<?= e($email) ?>" required>
+<span class="login__label">Почта или логин</span>
+<input class="login__input" type="text" name="login" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="you@mail.ru" value="<?= e($login) ?>" required>
 </label>
 <div class="login__field">
 <div class="login__label-row">

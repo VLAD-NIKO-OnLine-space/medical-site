@@ -36,3 +36,24 @@ document.addEventListener("keydown", (e) => {
 window.matchMedia("(min-width: 1241px)").addEventListener("change", (e) => {
   if (e.matches) setOpen(false);
 });
+
+// меню аккаунта (почта клиента в шапке): плавно раскрывается по клику, закрывается кликом мимо и Esc
+const account = header.querySelector("[data-account]");
+if (account) {
+  const toggle = account.querySelector("[data-account-toggle]");
+  const accountMenu = account.querySelector("[data-account-menu]");
+  const setAccount = (open) => {
+    accountMenu.classList.toggle("is-open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+  };
+  toggle.addEventListener("click", () => setAccount(!accountMenu.classList.contains("is-open")));
+  document.addEventListener("click", (e) => {
+    if (!account.contains(e.target)) setAccount(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && accountMenu.classList.contains("is-open")) {
+      setAccount(false);
+      toggle.focus();
+    }
+  });
+}

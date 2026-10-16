@@ -25,6 +25,10 @@ exec('rm -rf ' . escapeshellarg($dist));
 copy_dir(__DIR__ . '/public', $dist);
 
 foreach (pages() as $url => $file) {
+    // кабинету нужен вошедший клиент и PHP — в статике его нет
+    if ($url === '/kabinet/') {
+        continue;
+    }
     write($dist . $url . 'index.html', render($file, $url));
 }
 write("$dist/404.html", render_404());
