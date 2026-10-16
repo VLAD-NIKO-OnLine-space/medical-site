@@ -67,3 +67,35 @@ if (el) {
   );
   loader.observe(section);
 }
+
+// «Обмен опытом»: аккаунтов покупателей пока нет — всем открывается окно с предложением купить доступ.
+// Когда появятся аккаунты, оплатившим кнопка будет открывать чат главы
+const exModal = document.querySelector("[data-exchange-modal]");
+if (exModal) {
+  const chapterEl = exModal.querySelector("[data-exchange-chapter]");
+  let opener = null;
+  section.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-exchange]");
+    if (!btn) return;
+    opener = btn;
+    chapterEl.textContent = btn.dataset.chapter;
+    exModal.showModal();
+    // фокус на само окно, а не на крестик — иначе вокруг крестика сразу рамка фокуса
+    exModal.focus();
+  });
+  // закрываем по крестику, ссылке «Подробнее» и клику по затемнению — только если кнопку мыши
+  // и нажали, и отпустили снаружи окна (выделение текста не закрывает)
+  const outside = (e) => {
+    const r = exModal.getBoundingClientRect();
+    return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+  };
+  let pressedOutside = false;
+  exModal.addEventListener("pointerdown", (e) => {
+    pressedOutside = e.target === exModal && outside(e);
+  });
+  exModal.addEventListener("click", (e) => {
+    if ((pressedOutside && e.target === exModal && outside(e)) || e.target.closest("[data-exchange-close]")) exModal.close();
+    pressedOutside = false;
+  });
+  exModal.addEventListener("close", () => opener?.focus({ preventScroll: true }));
+}

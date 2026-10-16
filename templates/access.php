@@ -2,6 +2,7 @@
 $c = content('access');
 // иконки пунктов карточки по порядку; для добавленных в админке пунктов — галочка
 $featureIcons = ['layers', 'repeat', 'monitor-smartphone'];
+$docIcons = ['file-text', 'shield-check'];
 ?>
 <section class="access" id="dostup" aria-labelledby="access-title">
 <div class="container access__grid">
@@ -35,6 +36,18 @@ $featureIcons = ['layers', 'repeat', 'monitor-smartphone'];
 </ul>
 <?php endif; ?>
 <a href="<?= e($c['button_href']) ?>" class="btn access-card__btn"><?= icon('lock', 'lock-open') ?><?= e($c['button_text']) ?></a>
+<?php if ($c['docs']): ?>
+<div class="access-card__docs">
+<?php if ($c['docs_note'] !== ''): ?>
+<p class="access-card__consent"><small><?= e(typo($c['docs_note'])) ?></small></p>
+<?php endif; ?>
+<ul class="access-card__doc-list">
+<?php foreach ($c['docs'] as $i => $doc): ?>
+<li><a class="access-card__doc" href="<?= e($doc['href']) ?>"><?= icon($docIcons[$i] ?? 'file-text', '', 18) ?><span><?= e($doc['label']) ?></span><?= icon('arrow-right', '', 16) ?></a></li>
+<?php endforeach; ?>
+</ul>
+</div>
+<?php endif; ?>
 <?php if ($c['card_note'] !== ''): ?>
 <p class="access-card__note"><small><?= nl2br(e(typo($c['card_note'])), false) ?></small></p>
 <?php endif; ?>
