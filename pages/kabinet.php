@@ -30,7 +30,7 @@ $page['robots'] = 'noindex, nofollow';
 <div>
 <?php if ($access): ?>
 <p class="cabinet__status-title">Доступ открыт</p>
-<p class="cabinet__status-text">Все главы и обмен опытом — ниже. Смотрите и пересматривайте сколько угодно.</p>
+<p class="cabinet__status-text">Все главы и «Обмен опытом» — ниже. Смотрите и пересматривайте сколько угодно.</p>
 <?php else: ?>
 <?php $support = content('footer')['email']; ?>
 <p class="cabinet__status-title">Доступ закрыт</p>
@@ -42,7 +42,8 @@ $page['robots'] = 'noindex, nofollow';
 <h2 class="cabinet__subtitle">Главы видеогида</h2>
 <ol class="cabinet__chapters">
 <?php foreach ($p['chapters'] as $i => $ch): ?>
-<?php $video = video_embed($ch['video_url']); $num = sprintf('%02d', $i + 1); $label = 'Глава ' . $num . ' · ' . $ch['title']; ?>
+<?php /* полное видео — отдельное поле: бесплатный фрагмент (video_url) видят все на главной */ ?>
+<?php $video = video_embed($ch['full_url'] ?? ''); $num = sprintf('%02d', $i + 1); $label = 'Глава ' . $num . ' · ' . $ch['title']; ?>
 <li class="cabinet__card" style="--tone: <?= $i % 4 ?>">
 <?php /* обложка: градиент и крупный номер; с видео — вся обложка открывает его */ ?>
 <?php if ($access && $video): ?>

@@ -12,6 +12,10 @@
 <meta property="og:site_name" content="<?= e(content('site')['name']) ?>">
 <meta property="og:title" content="<?= e($page['title']) ?>">
 <meta property="og:description" content="<?= e($page['description']) ?>">
+<meta property="og:image" content="<?= e($site['domain']) ?>/assets/img/hero-1280.jpg">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="720">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">

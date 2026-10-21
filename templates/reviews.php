@@ -36,7 +36,12 @@ $filters = ['all' => ['Все', $total], 'positive' => ['Положительн�
 <span class="reviews__score-value"><?= number_format($average, 1, ',', '') ?></span>
 <span class="reviews__score-stars" role="img" aria-label="Средняя оценка <?= number_format($average, 1, ',', '') ?> из 5">
 <?php for ($n = 1; $n <= 5; $n++): ?>
-<span class="review__star<?= $n <= round($average) ? ' is-on' : '' ?>"><?= icon('star', '', 18) ?></span>
+<?php $fill = round(max(0, min(1, $average - $n + 1)) * 100); ?>
+<?php if ($fill > 0 && $fill < 100): /* дробная звезда: 4,6 — пятая закрашена на 60 % */ ?>
+<span class="review__star review__star--part" style="--fill: <?= $fill ?>%"><?= icon('star', '', 18) ?><span class="review__star-fill"><?= icon('star', '', 18) ?></span></span>
+<?php else: ?>
+<span class="review__star<?= $fill >= 100 ? ' is-on' : '' ?>"><?= icon('star', '', 18) ?></span>
+<?php endif; ?>
 <?php endfor; ?>
 </span>
 <span class="reviews__score-count"><?= $total ?> <?= plural($total, ['отзыв', 'отзыва', 'отзывов']) ?></span>
@@ -87,7 +92,7 @@ $filters = ['all' => ['Все', $total], 'positive' => ['Положительн�
 <button class="review-modal__close" type="button" data-review-close aria-label="Закрыть"><?= icon('x', '', 22) ?></button>
 <form class="review-form" action="/otzyv/" method="post" data-review-form novalidate>
 <p class="review-form__title" id="review-modal-title">Оставить отзыв</p>
-<p class="review-form__lead">Расскажите, чем вам помогли видеолекции. Отзыв появится на сайте после проверки.</p>
+<p class="review-form__lead">Расскажите о своём впечатлении от видеогида. Отзыв появится на сайте после проверки.</p>
 <label class="review-form__field">
 <span class="review-form__label">Ваше имя<span class="review-form__req" aria-hidden="true">*</span></span>
 <input class="review-form__input" type="text" name="author" maxlength="60" autocomplete="given-name" placeholder="Например, Анна" required aria-describedby="review-err-author">

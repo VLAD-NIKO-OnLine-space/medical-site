@@ -1800,6 +1800,18 @@ html.is-menu-open {
   fill: currentColor;
 }
 
+.review__star--part {
+  position: relative;
+}
+
+.review__star-fill {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  color: var(--accent);
+  clip-path: inset(0 calc(100% - var(--fill)) 0 0);
+}
+
 .review__quote {
   display: flex;
   margin: -6px -4px 0 0;
