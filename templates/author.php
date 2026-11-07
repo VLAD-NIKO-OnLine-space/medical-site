@@ -6,7 +6,8 @@ $photo = is_file(__DIR__ . "/../public{$c['photo']['src']}-{$c['photo']['w'][0]}
 <section class="author" id="o-vrache" aria-labelledby="author-title">
 <div class="container">
 <div class="author__panel">
-<div class="author__photo<?= $photo ? '' : ' author__photo--empty' ?>">
+<?php /* рамка в пропорциях самого фото — фигура занимает всю ширину колонки */ ?>
+<div class="author__photo<?= $photo ? '' : ' author__photo--empty' ?>"<?= $photo ? ' style="aspect-ratio: ' . (int) $c['photo']['width'] . ' / ' . (int) $c['photo']['height'] . '"' : '' ?>>
 <?php if ($photo): ?>
 <?= picture($c['photo'], '(max-width: 1024px) 90vw, 40vw', $c['photo_alt'], 'loading="lazy" decoding="async"') ?>
 <?php else: ?>
@@ -32,7 +33,7 @@ $photo = is_file(__DIR__ . "/../public{$c['photo']['src']}-{$c['photo']['w'][0]}
 <?php endif; ?>
 <?php if ($c['bio'] !== ''): ?>
 <div class="author__bio">
-<?= paragraphs($c['bio']) ?>
+<?= rich_text($c['bio']) ?>
 </div>
 <?php endif; ?>
 </div>
