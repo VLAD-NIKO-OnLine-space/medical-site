@@ -6,6 +6,7 @@
 const CHAT_MAX = 1000;        // символов в сообщении
 const CHAT_LIMIT = 10;        // сообщений от клиента
 const CHAT_WINDOW = 60;       // за минуту
+const CHAT_TITLE_MAX = 120;   // символов в «главной мысли»
 
 function chat_db(): PDO
 {
@@ -14,6 +15,15 @@ function chat_db(): PDO
     if (!$ready) {
         $db->exec('CREATE TABLE IF NOT EXISTS chat_messages (id INTEGER PRIMARY KEY AUTOINCREMENT, chapter INTEGER NOT NULL, client_id INTEGER NOT NULL, text TEXT NOT NULL, created_at INTEGER NOT NULL)');
         $db->exec('CREATE INDEX IF NOT EXISTS chat_by_chapter ON chat_messages (chapter, id)');
+        // схема сообщения как в «Опыте» заказчика: дата, имя, главная мысль, комментарий.
+        // title — главная мысль (у клиентов необязательна); author — имя у записей, добавленных из админки (client_id = 0)
+        $cols = array_column($db->query('PRAGMA table_info(chat_messages)')->fetchAll(), 'name');
+        if (!in_array('title', $cols, true)) {
+            $db->exec("ALTER TABLE chat_messages ADD COLUMN title TEXT NOT NULL DEFAULT ''");
+        }
+        if (!in_array('author', $cols, true)) {
+            $db->exec("ALTER TABLE chat_messages ADD COLUMN author TEXT NOT NULL DEFAULT ''");
+        }
         $ready = true;
     }
     return $db;
@@ -22,15 +32,17 @@ function chat_db(): PDO
 /** Сообщения главы для показа: последние 200, старые сверху. */
 function chat_messages(int $chapter, int $viewerId): array
 {
-    $q = chat_db()->prepare('SELECT m.id, m.text, m.created_at, m.client_id, c.name FROM chat_messages m JOIN clients c ON c.id = m.client_id WHERE m.chapter = ? ORDER BY m.id DESC LIMIT 200');
+    // порядок — по дате (у записей из админки дата задаётся вручную), при равной — по очереди добавления
+    $q = chat_db()->prepare("SELECT m.id, m.title, m.text, m.created_at, m.client_id, CASE WHEN m.author <> '' THEN m.author ELSE COALESCE(c.name, 'Участник') END AS name FROM chat_messages m LEFT JOIN clients c ON c.id = m.client_id WHERE m.chapter = ? ORDER BY m.created_at DESC, m.id DESC LIMIT 200");
     $q->execute([$chapter]);
     return array_map(fn($m) => [
         'id' => (int) $m['id'],
         'name' => $m['name'],
         'initials' => initials($m['name']),
+        'title' => $m['title'],
         'text' => $m['text'],
-        'time' => date('d.m.y, H:i', (int) $m['created_at']),
-        'own' => (int) $m['client_id'] === $viewerId,
+        'time' => date('d.m.Y', (int) $m['created_at']),
+        'own' => (int) $m['client_id'] !== 0 && (int) $m['client_id'] === $viewerId,
     ], array_reverse($q->fetchAll()));
 }
 
@@ -72,6 +84,11 @@ function chat_endpoint(): void
             http_response_code(422);
             exit(json_encode(['ok' => false, 'error' => 'Напишите сообщение — до ' . CHAT_MAX . ' символов.'], JSON_UNESCAPED_UNICODE));
         }
+        $title = clean_text($_POST['title'] ?? '', CHAT_TITLE_MAX, false);
+        if ($title === null) {
+            http_response_code(422);
+            exit(json_encode(['ok' => false, 'error' => 'Главная мысль — до ' . CHAT_TITLE_MAX . ' символов.'], JSON_UNESCAPED_UNICODE));
+        }
         $db = chat_db();
         $q = $db->prepare('SELECT COUNT(*) FROM chat_messages WHERE client_id = ? AND created_at > ?');
         $q->execute([$client['id'], time() - CHAT_WINDOW]);
@@ -79,7 +96,7 @@ function chat_endpoint(): void
             http_response_code(429);
             exit(json_encode(['ok' => false, 'error' => 'Слишком много сообщений подряд. Подождите минуту.'], JSON_UNESCAPED_UNICODE));
         }
-        $db->prepare('INSERT INTO chat_messages (chapter, client_id, text, created_at) VALUES (?, ?, ?, ?)')->execute([$chapter, $client['id'], $text, time()]);
+        $db->prepare('INSERT INTO chat_messages (chapter, client_id, title, text, created_at) VALUES (?, ?, ?, ?, ?)')->execute([$chapter, $client['id'], $title, $text, time()]);
     }
     exit(json_encode(['ok' => true, 'messages' => chat_messages($chapter, (int) $client['id'])], JSON_UNESCAPED_UNICODE));
 }
@@ -87,9 +104,31 @@ function chat_endpoint(): void
 /** Для админки: последние сообщения всех глав. */
 function chat_recent(int $limit = 300): array
 {
-    $q = chat_db()->prepare('SELECT m.id, m.chapter, m.text, m.created_at, c.name, c.login FROM chat_messages m JOIN clients c ON c.id = m.client_id ORDER BY m.id DESC LIMIT ?');
+    $q = chat_db()->prepare("SELECT m.id, m.chapter, m.title, m.text, m.created_at, CASE WHEN m.author <> '' THEN m.author ELSE COALESCE(c.name, 'Участник') END AS name, COALESCE(c.login, '') AS login FROM chat_messages m LEFT JOIN clients c ON c.id = m.client_id ORDER BY m.id DESC LIMIT ?");
     $q->execute([$limit]);
     return $q->fetchAll();
+}
+
+/** «Опыт» из админки: запись от имени автора истории, не привязана к клиенту. Возвращает текст ошибки или null. */
+function chat_add_story(int $chapter, string $date, string $author, string $title, string $text): ?string
+{
+    $total = count(content('program')['chapters']);
+    $author = clean_text($author, 60, false);
+    $title = clean_text($title, CHAT_TITLE_MAX, false);
+    $text = clean_text($text, 3000, true);
+    $at = DateTimeImmutable::createFromFormat('!Y-m-d', $date);
+    if ($chapter < 1 || $chapter > $total) {
+        return 'Выберите главу.';
+    }
+    if ($at === false) {
+        return 'Укажите дату.';
+    }
+    if ($author === null || $author === '' || $title === null || $title === '' || $text === null || $text === '') {
+        return 'Заполните имя, главную мысль и комментарий.';
+    }
+    chat_db()->prepare('INSERT INTO chat_messages (chapter, client_id, author, title, text, created_at) VALUES (?, 0, ?, ?, ?, ?)')
+        ->execute([$chapter, $author, $title, $text, $at->setTime(12, 0)->getTimestamp()]);
+    return null;
 }
 
 function chat_delete(int $id): void

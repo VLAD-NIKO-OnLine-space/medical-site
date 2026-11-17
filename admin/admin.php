@@ -216,7 +216,9 @@ $blocks = schema_group($group);
 $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 $csrf = $_SESSION['csrf'];
 $flash = $_SESSION['flash'] ?? null;
-unset($_SESSION['flash']);
+$flashError = $_SESSION['flash_error'] ?? null;
+$story = $_SESSION['story'] ?? [];
+unset($_SESSION['flash'], $_SESSION['flash_error'], $_SESSION['story']);
 $loginError = null;
 $values = null;
 $errors = [];
@@ -240,6 +242,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         chat_delete((int) ($_POST['id'] ?? 0));
         $_SESSION['flash'] = 'Сообщение удалено.';
         admin_redirect(ADMIN_URL . 'chaty/');
+    } elseif ($action === 'chat_add' && isset($_SESSION['admin'])) {
+        $story = array_map(fn($v) => is_string($v) ? $v : '', (array) ($_POST['story'] ?? []));
+        $err = chat_add_story((int) ($story['chapter'] ?? 0), $story['date'] ?? '', $story['author'] ?? '', $story['title'] ?? '', $story['text'] ?? '');
+        if ($err === null) {
+            $_SESSION['flash'] = 'Опыт добавлен в чат главы.';
+        } else {
+            $_SESSION['flash_error'] = $err;
+            $_SESSION['story'] = $story;
+        }
+        admin_redirect(ADMIN_URL . 'chaty/#story');
     } elseif ($action === 'review' && isset($_SESSION['admin'])) {
         [$do, $id] = explode(':', (string) ($_POST['review'] ?? '')) + ['', 0];
         $id = (int) $id;

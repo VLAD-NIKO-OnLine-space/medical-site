@@ -40,6 +40,7 @@ if ($group === 'reviews') {
 <div class="layout">
 <nav class="sidenav" aria-label="Блоки раздела «<?= e($sectionTitle) ?>»"<?= $pane ? ' data-panes' : '' ?>>
 <?php if ($group === 'chats'): ?>
+<a href="#story">Добавить опыт</a>
 <a href="#chats">Сообщения</a>
 <a href="#clients">Клиенты</a>
 <?php elseif ($group === 'reviews'): ?>
@@ -61,6 +62,9 @@ if ($group === 'reviews') {
 <?php if ($flash): ?>
 <p class="alert alert--ok" role="status"><?= icon('check', '', 18) ?><?= e($flash) ?></p>
 <?php endif; ?>
+<?php if ($flashError): ?>
+<p class="alert alert--error" role="alert"><?= e($flashError) ?></p>
+<?php endif; ?>
 <?php if ($errors): ?>
 <p class="alert alert--error" role="alert">Не сохранено: исправьте поля, отмеченные красным.</p>
 <?php endif; ?>
@@ -70,16 +74,49 @@ $messages = chat_recent();
 $chapters = content('program')['chapters'];
 $clients = client_db()->query('SELECT login, name, email, access_until, created_at FROM clients ORDER BY id DESC')->fetchAll();
 ?>
+<section class="panel" id="story">
+<h2 class="panel__title">Добавить опыт</h2>
+<p class="field__hint">Запись появится в чате «Обмен опытом» выбранной главы в том же виде, что и сообщения клиентов: дата, имя, главная мысль, комментарий.</p>
+<div class="panel__fields">
+<div class="field">
+<label class="field__label" for="story-chapter">Глава</label>
+<select class="field__input" id="story-chapter" name="story[chapter]" form="chat-add" required>
+<option value="">Выберите главу</option>
+<?php foreach ($chapters as $i => $ch): ?>
+<option value="<?= $i + 1 ?>"<?= (int) ($story['chapter'] ?? 0) === $i + 1 ? ' selected' : '' ?>>Глава <?= sprintf('%02d', $i + 1) ?> · <?= e($ch['title']) ?></option>
+<?php endforeach; ?>
+</select>
+</div>
+<div class="field">
+<label class="field__label" for="story-date">Дата</label>
+<input class="field__input" id="story-date" type="date" name="story[date]" form="chat-add" value="<?= e($story['date'] ?? date('Y-m-d')) ?>" required>
+</div>
+<div class="field">
+<label class="field__label" for="story-author">Имя</label>
+<input class="field__input" id="story-author" type="text" name="story[author]" form="chat-add" maxlength="60" value="<?= e($story['author'] ?? '') ?>" required>
+</div>
+<div class="field">
+<label class="field__label" for="story-title">Главная мысль</label>
+<input class="field__input" id="story-title" type="text" name="story[title]" form="chat-add" maxlength="<?= CHAT_TITLE_MAX ?>" value="<?= e($story['title'] ?? '') ?>" required>
+</div>
+<div class="field field--wide">
+<label class="field__label" for="story-text">Комментарий</label>
+<textarea class="field__input" id="story-text" rows="5" name="story[text]" form="chat-add" maxlength="3000" required><?= e($story['text'] ?? '') ?></textarea>
+</div>
+</div>
+<button class="admin-btn" type="submit" form="chat-add"><?= icon('plus', '', 18) ?>Добавить в чат</button>
+</section>
 <section class="panel" id="chats">
 <h2 class="panel__title">Сообщения в «Обмене опытом» <span class="badge badge--muted"><?= count($messages) ?></span></h2>
-<p class="field__hint">Сообщения клиентов с доступом появляются в чатах глав сразу. Здесь последние 300 со всех глав — неподходящие можно удалить.</p>
+<p class="field__hint">Сообщения клиентов с доступом и добавленный опыт появляются в чатах глав сразу. Здесь последние 300 со всех глав — неподходящие можно удалить.</p>
 <?php if (!$messages): ?>
 <p class="moderation__empty">Сообщений пока нет.</p>
 <?php else: ?>
 <div class="moderation">
 <?php foreach ($messages as $m): ?>
 <article class="moderation__item">
-<p class="moderation__meta"><strong><?= e($m['name']) ?></strong> (<?= e($m['login']) ?>) · Глава <?= sprintf('%02d', $m['chapter']) ?><?= isset($chapters[$m['chapter'] - 1]) ? ' «' . e($chapters[$m['chapter'] - 1]['title']) . '»' : '' ?> · <?= date('d.m.y, H:i', (int) $m['created_at']) ?></p>
+<p class="moderation__meta"><strong><?= e($m['name']) ?></strong> <?= $m['login'] !== '' ? '(' . e($m['login']) . ')' : '(опыт из админки)' ?> · Глава <?= sprintf('%02d', $m['chapter']) ?><?= isset($chapters[$m['chapter'] - 1]) ? ' «' . e($chapters[$m['chapter'] - 1]['title']) . '»' : '' ?> · <?= date('d.m.Y', (int) $m['created_at']) ?></p>
+<?php if ($m['title'] !== ''): ?><p class="moderation__text"><strong><?= e($m['title']) ?></strong></p><?php endif; ?>
 <p class="moderation__text"><?= nl2br(e($m['text']), false) ?></p>
 <div class="moderation__actions">
 <button class="admin-btn admin-btn--ghost" type="submit" form="chat-actions" name="id" value="<?= (int) $m['id'] ?>" data-confirm="Удалить это сообщение? Это нельзя отменить."><?= icon('trash', '', 18) ?>Удалить</button>
@@ -141,6 +178,10 @@ $clients = client_db()->query('SELECT login, name, email, access_until, created_
 <?php endforeach; ?>
 </form>
 </div>
+<form id="chat-add" method="post" action="<?= ADMIN_URL ?>chaty/" hidden>
+<input type="hidden" name="csrf" value="<?= e($csrf) ?>">
+<input type="hidden" name="action" value="chat_add">
+</form>
 <form id="chat-actions" method="post" action="<?= ADMIN_URL ?>chaty/" hidden>
 <input type="hidden" name="csrf" value="<?= e($csrf) ?>">
 <input type="hidden" name="action" value="chat_delete">

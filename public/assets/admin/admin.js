@@ -12,7 +12,10 @@ const markDirty = () => {
   saveBtn.disabled = false;
 };
 
-form.addEventListener("input", markDirty);
+// поля других форм внутри страницы (например, «Добавить опыт» в «Чатах») изменениями редактора не считаются
+form.addEventListener("input", (e) => {
+  if (e.target.form === form) markDirty();
+});
 
 // картинка: сразу показываем выбранный файл вместо текущего, на сайт он попадёт после «Сохранить»
 form.addEventListener("change", (e) => {

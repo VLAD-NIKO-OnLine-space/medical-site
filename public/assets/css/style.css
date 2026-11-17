@@ -2571,6 +2571,15 @@ html:has(.review-modal[open]) {
   color: var(--text);
 }
 
+.chat-msg__title {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--accent-dark);
+  overflow-wrap: anywhere;
+}
+
 .chat-msg__text {
   margin: 0;
   font-size: 16px;
@@ -2600,6 +2609,19 @@ html:has(.review-modal[open]) {
   margin-top: 12px;
   padding-top: 14px;
   border-top: 1px solid rgba(18, 127, 128, 0.14);
+}
+
+.chat-modal__fields {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.chat-modal__input--title {
+  min-height: 46px;
+  padding-block: 11px;
 }
 
 .chat-modal__input {

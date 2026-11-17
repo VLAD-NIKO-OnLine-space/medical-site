@@ -6,6 +6,7 @@ if (modal) {
   const list = modal.querySelector("[data-chat-list]");
   const form = modal.querySelector("[data-chat-form]");
   const input = form.querySelector("textarea");
+  const titleInput = form.querySelector("[name=title]");
   const send = form.querySelector("button");
   const error = modal.querySelector("[data-chat-error]");
   const chapterEl = modal.querySelector("[data-chat-chapter]");
@@ -33,7 +34,8 @@ if (modal) {
   const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
   const render = (messages) => {
-    const newest = messages.at(-1)?.id ?? 0;
+    // сообщения идут по дате, поэтому изменения ловим по числу и самому свежему id, а не по последнему в списке
+    const newest = `${messages.length}:${Math.max(0, ...messages.map((m) => m.id))}`;
     if (newest === lastId) return;
     const nearBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 80;
     list.innerHTML = messages.length
@@ -41,7 +43,7 @@ if (modal) {
           .map(
             (m) => `<article class="chat-msg${m.own ? " chat-msg--own" : ""}">
 <span class="chat-msg__avatar" aria-hidden="true">${esc(m.initials.toUpperCase())}</span>
-<div class="chat-msg__body"><p class="chat-msg__meta"><strong>${m.own ? "Вы" : esc(m.name)}</strong> · ${esc(m.time)}</p><p class="chat-msg__text">${esc(m.text).replace(/\n/g, "<br>")}</p></div>
+<div class="chat-msg__body"><p class="chat-msg__meta"><strong>${m.own ? "Вы" : esc(m.name)}</strong> · <time>${esc(m.time)}</time></p>${m.title ? `<p class="chat-msg__title">${esc(m.title)}</p>` : ""}<p class="chat-msg__text">${esc(m.text).replace(/\n/g, "<br>")}</p></div>
 </article>`,
           )
           .join("")
@@ -95,10 +97,12 @@ if (modal) {
       const body = new FormData();
       body.set("ch", chapter);
       body.set("text", text);
+      body.set("title", titleInput.value.trim());
       const res = await fetch("/chat/", { method: "POST", body, headers: { Accept: "application/json" } });
       const data = await res.json();
       if (data.ok) {
         input.value = "";
+        titleInput.value = "";
         lastId = -2; // своё сообщение — всегда прокрутить вниз
         render(data.messages);
         list.scrollTop = list.scrollHeight;
@@ -108,6 +112,14 @@ if (modal) {
       showError("Нет связи с сайтом. Проверьте интернет и попробуйте ещё раз.");
     } finally {
       send.disabled = false;
+      input.focus();
+    }
+  });
+
+  // Enter в поле главной мысли — перейти к комментарию
+  titleInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.isComposing) {
+      e.preventDefault();
       input.focus();
     }
   });
