@@ -186,11 +186,7 @@ morph-icon {
   }
 
   .hero__bg img,
-  .video-modal[open],
-  .header__menu-cap,
-  .header__menu li,
-  .header__menu-cta,
-  .header__menu-account {
+  .video-modal[open] .video-modal__frame {
     animation: none !important;
   }
 
@@ -868,11 +864,10 @@ morph-icon {
   padding: 0;
   overflow: visible;
   border: 0;
-  border-radius: 20px;
-  background: #000;
+  background: transparent;
 }
 
-.video-modal[open] {
+.video-modal[open] .video-modal__frame {
   animation: modal-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -884,7 +879,7 @@ morph-icon {
 }
 
 .video-modal::backdrop {
-  background: rgba(8, 24, 18, 0.72);
+  background: rgba(0, 0, 0, 0.85);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
 }
@@ -893,6 +888,7 @@ morph-icon {
   aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: 20px;
+  background: #000;
 }
 
 .video-modal__frame iframe,
@@ -921,9 +917,10 @@ morph-icon {
 }
 
 .video-modal__close {
-  position: absolute;
-  top: -54px;
-  right: 0;
+  position: fixed;
+  z-index: 1;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4492,7 +4489,7 @@ button.cabinet__cover:hover .cabinet__cover-play {
     display: flex;
   }
 
-  /* полноэкранное стеклянное меню под шапкой: выезжает справа, пункты появляются лесенкой */
+  /* полноэкранное стеклянное меню под шапкой выезжает справа */
   .js .header__nav {
     position: fixed;
     inset: 0;
@@ -4575,21 +4572,6 @@ button.cabinet__cover:hover .cabinet__cover-play {
 
   .js .header__menu a[aria-current="page"] {
     color: var(--accent-dark);
-  }
-
-  .js .header.is-menu-open .header__menu-cap,
-  .js .header.is-menu-open .header__menu li,
-  .js .header.is-menu-open .header__menu-cta,
-  .js .header.is-menu-open .header__menu-account {
-    animation: menu-item-in 0.44s cubic-bezier(0.22, 0.9, 0.3, 1) both;
-    animation-delay: calc(110ms + var(--i, 0) * 40ms);
-  }
-}
-
-@keyframes menu-item-in {
-  from {
-    opacity: 0;
-    transform: translateX(16px);
   }
 }
 

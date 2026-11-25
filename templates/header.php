@@ -13,24 +13,23 @@ $account = $me ? ($me['email'] !== '' ? $me['email'] : $me['login']) : '';
 </a>
 <nav class="header__nav" id="site-menu" aria-label="Основное меню">
 <div class="header__drawer-top">
-<p class="header__menu-cap" style="--i: 0" aria-hidden="true">Меню</p>
+<p class="header__menu-cap" aria-hidden="true">Меню</p>
 <button class="header__menu-close" type="button" data-menu-close aria-label="Закрыть меню"><?= icon('x', '', 22) ?></button>
 </div>
 <ul class="header__menu">
-<?php $nav = nav_items(); ?>
-<?php foreach ($nav as $i => $item): ?>
-<li style="--i: <?= $i + 1 ?>"><a href="<?= e($item['href']) ?>"<?= $item['href'] === $url ? ' aria-current="page"' : '' ?>><?= e($item['label']) ?></a></li>
+<?php foreach (nav_items() as $item): ?>
+<li><a href="<?= e($item['href']) ?>"<?= $item['href'] === $url ? ' aria-current="page"' : '' ?>><?= e($item['label']) ?></a></li>
 <?php endforeach; ?>
 </ul>
 <?php if ($me): ?>
 <?php /* телефон: в бургер-меню — почта и две кнопки вместо выпадающего меню */ ?>
-<div class="header__menu-account" style="--i: <?= count($nav) + 1 ?>">
+<div class="header__menu-account">
 <p class="header__menu-email"><?= icon('circle-user', '', 18) ?><span><?= e($account) ?></span></p>
 <a href="/kabinet/" class="btn"><?= icon('circle-user') ?>Личный кабинет</a>
 <form method="post" action="/vyhod/"><button class="btn btn--ghost" type="submit"><?= icon('log-out') ?>Выйти</button></form>
 </div>
 <?php else: ?>
-<a href="<?= e($h['button_href']) ?>" class="btn header__menu-cta" style="--i: <?= count($nav) + 1 ?>"><?= icon('door-closed', 'door-open') ?><?= e($h['button_text']) ?></a>
+<a href="<?= e($h['button_href']) ?>" class="btn header__menu-cta"><?= icon('door-closed', 'door-open') ?><?= e($h['button_text']) ?></a>
 <?php endif; ?>
 </nav>
 <?php if ($me): ?>
