@@ -4972,10 +4972,11 @@ button.cabinet__cover:hover .cabinet__cover-play {
   }
 
   .hero__inner {
+    --hero-block-gap: 12px;
     grid-template-areas: "copy" "video" "action";
     align-content: start;
-    gap: 30px;
-    padding-top: calc(var(--header-space) + 28px);
+    gap: var(--hero-block-gap);
+    padding-top: calc(var(--header-space) + 2px);
     padding-bottom: 48px;
   }
 
@@ -5027,7 +5028,7 @@ button.cabinet__cover:hover .cabinet__cover-play {
   .hero__actions-mobile {
     grid-area: action;
     display: grid;
-    gap: 24px;
+    gap: var(--hero-block-gap);
   }
 
   .hero__btn--mobile {
@@ -5065,7 +5066,7 @@ button.cabinet__cover:hover .cabinet__cover-play {
   .hero-cards {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    gap: var(--hero-block-gap);
     margin: 0;
     padding: 0;
     list-style: none;
