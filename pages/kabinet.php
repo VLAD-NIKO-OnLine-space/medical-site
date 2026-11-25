@@ -12,7 +12,6 @@ $access = client_has_access($me);
 $p = content('program');
 $page['title'] = 'Личный кабинет — ' . content('site')['name'];
 $page['description'] = 'Личный кабинет зрителя видеогида.';
-$page['robots'] = 'noindex, nofollow';
 ?>
 <section class="cabinet" aria-labelledby="cabinet-title">
 <div class="container">

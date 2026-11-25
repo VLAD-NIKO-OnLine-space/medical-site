@@ -2,7 +2,6 @@
 $c = content('notfound');
 $page['title'] = 'Страница не найдена — ' . content('site')['name'];
 $page['description'] = $c['text'];
-$page['robots'] = 'noindex, follow';
 ?>
 <section class="notfound" aria-labelledby="notfound-title">
 <div class="container">

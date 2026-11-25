@@ -2,6 +2,8 @@
 // даты отзывов и время сохранения в админке — по Москве
 date_default_timezone_set('Europe/Moscow');
 
+const SITE_ROBOTS = 'noindex, nofollow, noarchive, nosnippet, noimageindex';
+
 function e(string $s): string
 {
     return htmlspecialchars($s, ENT_QUOTES | ENT_HTML5, 'UTF-8');
@@ -206,11 +208,14 @@ function picture(array $img, string $sizes, string $alt, string $attrs = '', str
         . ' width="' . (int) $img['width'] . '" height="' . (int) $img['height'] . '" alt="' . e($alt) . '"' . ($attrs !== '' ? ' ' . $attrs : '') . '></picture>';
 }
 
-/** Как показать видео по ссылке: ['file', src] для .mp4/.webm, иначе ['iframe', embed-src]; null — ссылки нет. */
+/** Возвращает режим плеера, URL и null при отсутствии ссылки. */
 function video_embed(string $url): ?array
 {
     if ($url === '') {
         return null;
+    }
+    if (preg_match('~\.m3u8(\?.*)?$~i', $url)) {
+        return ['hls', $url];
     }
     if (preg_match('~\.(mp4|webm|ogv)(\?.*)?$~i', $url)) {
         return ['file', $url];
@@ -299,7 +304,7 @@ function render(string $file, string $url): string
 {
     $site = site();
     // секции могут дописать в styles/scripts свои файлы: страница рендерится раньше, чем head
-    $page = ['title' => '', 'description' => '', 'robots' => 'index, follow', 'styles' => [], 'scripts' => []];
+    $page = ['title' => '', 'description' => '', 'styles' => [], 'scripts' => []];
     // страницы зависят от того, вошёл ли клиент: браузер каждый раз сверяется с сервером, прокси не хранят
     if (!headers_sent() && PHP_SAPI !== 'cli') {
         header('Cache-Control: private, no-cache');
@@ -316,20 +321,6 @@ function render(string $file, string $url): string
 function render_404(): string
 {
     return render(__DIR__ . '/pages/404.php', '/404/');
-}
-
-function sitemap(): string
-{
-    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
-    foreach (pages() as $url => $file) {
-        // вход и кабинет закрыты от поисковиков (noindex) — в карту сайта не идут
-        if ($url === '/vhod/' || $url === '/kabinet/') {
-            continue;
-        }
-        $lastmod = date('c', filemtime($file));
-        $xml .= '  <url><loc>' . e(site()['domain'] . $url) . "</loc><lastmod>$lastmod</lastmod></url>\n";
-    }
-    return $xml . "</urlset>\n";
 }
 
 /** Манифест для установки сайта на телефон: название — из админки. */
@@ -354,7 +345,8 @@ function manifest(): string
 
 function robots(): string
 {
-    return "User-agent: *\nAllow: /\nDisallow: /admin/\n\nSitemap: " . site()['domain'] . "/sitemap.xml\n";
+    // Роботы должны увидеть noindex, чтобы убрать найденные URL из поиска.
+    return "User-agent: *\nAllow: /\n";
 }
 
 require __DIR__ . '/client.php';

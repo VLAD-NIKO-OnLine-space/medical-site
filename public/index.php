@@ -7,9 +7,11 @@ if (PHP_SAPI === 'cli-server' && $url !== '/' && is_file(__DIR__ . $url)) {
     return false;
 }
 
+header('X-Robots-Tag: ' . SITE_ROBOTS);
+
 if ($url === '/sitemap.xml') {
-    header('Content-Type: application/xml; charset=utf-8');
-    exit(sitemap());
+    http_response_code(410);
+    exit;
 }
 if ($url === '/site.webmanifest') {
     header('Content-Type: application/manifest+json; charset=utf-8');

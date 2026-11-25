@@ -12,7 +12,10 @@ $account = $me ? ($me['email'] !== '' ? $me['email'] : $me['login']) : '';
 <?= logo_text() ?>
 </a>
 <nav class="header__nav" id="site-menu" aria-label="Основное меню">
+<div class="header__drawer-top">
 <p class="header__menu-cap" style="--i: 0" aria-hidden="true">Меню</p>
+<button class="header__menu-close" type="button" data-menu-close aria-label="Закрыть меню"><?= icon('x', '', 22) ?></button>
+</div>
 <ul class="header__menu">
 <?php $nav = nav_items(); ?>
 <?php foreach ($nav as $i => $item): ?>
@@ -49,4 +52,5 @@ $account = $me ? ($me['email'] !== '' ? $me['email'] : $me['login']) : '';
 <button class="header__burger" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Открыть меню" data-burger data-close-icon="<?= e(icons()['x']) ?>"><morph-icon reduced-motion="user"><?= icon('menu', '', 22) ?></morph-icon></button>
 </div>
 </div>
+<div class="header__menu-backdrop" data-menu-backdrop aria-hidden="true"></div>
 </header>

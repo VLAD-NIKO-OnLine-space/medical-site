@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="<?= e(SITE_ROBOTS) ?>">
 <title>Вход — админка</title>
 <link rel="stylesheet" href="<?= e(asset('/assets/admin/admin.css')) ?>">
 </head>

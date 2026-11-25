@@ -4,7 +4,6 @@ $c = content('login');
 $support = content('footer')['email'];
 $page['title'] = $c['meta_title'];
 $page['description'] = $c['lead'];
-$page['robots'] = 'noindex, follow';
 $page['scripts'][] = '/assets/js/login.js';
 $error = null;
 $login = '';

@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($page['title']) ?></title>
 <meta name="description" content="<?= e($page['description']) ?>">
-<meta name="robots" content="<?= e($page['robots']) ?>">
+<meta name="robots" content="<?= e(SITE_ROBOTS) ?>">
 <?php if ($url !== '/404/'): ?>
 <link rel="canonical" href="<?= e($site['domain'] . $url) ?>">
 <meta property="og:url" content="<?= e($site['domain'] . $url) ?>">

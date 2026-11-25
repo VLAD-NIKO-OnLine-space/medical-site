@@ -54,9 +54,7 @@ $page['description'] = 'Как с нами связаться.';
 </div>
 ```
 
-Необязательно: `$page['robots'] = 'noindex, follow';` — закрыть страницу от индексации.
-
-Страница сразу открывается по своему адресу и попадает в `sitemap.xml`. В меню она попадает, только если добавить её в `nav` в `config.php`.
+Страница сразу открывается по своему адресу. Весь сайт отдаёт `noindex` в метатеге и HTTP-заголовке. Ссылки меню задаются в блоке «Шапка» в админке.
 
 ## Где работает сайт
 
@@ -86,7 +84,9 @@ systemctl start nginx                            # включить сайт
 Если nginx выключен, сайт можно посмотреть встроенным сервером PHP. На сервере:
 
 ```bash
-cd /var/www/scr-system && setsid nohup php -S 127.0.0.1:8000 -t public public/index.php > data/dev-server.log 2>&1 &
+cd /var/www/scr-system
+mkdir -p data
+setsid nohup php -S 127.0.0.1:8000 -t public public/index.php > data/dev-server.log 2>&1 &
 pkill -f "php -S 127.0.0.1:8000"     # остановить
 ```
 
@@ -118,7 +118,7 @@ cp /etc/nginx/snippets/scr-headers.conf server/nginx/scr-headers.conf
 
 ## Админка
 
-Адрес: **/admin/** (сейчас — http://164.90.165.153/admin/). Закрыта от поисковиков (`robots.txt`, `noindex`).
+Адрес: **/admin/**. Страницы админки также отдают `noindex`.
 
 Админка разделена на три раздела (вкладки в шапке), каждый сохраняется отдельно и не трогает остальные:
 
@@ -181,7 +181,7 @@ php build.php
 
 - каждая страница — `путь/index.html`;
 - `404.html` и `.htaccess` с `ErrorDocument 404 /404.html`;
-- `sitemap.xml` и `robots.txt` — генерируются из списка страниц;
+- `robots.txt` позволяет роботам прочитать запрет индексации. Карта сайта отключена;
 - содержимое `public/assets/`.
 
 Папка `dist/` пересоздаётся с нуля при каждой сборке — руками в ней ничего не править.
@@ -196,7 +196,7 @@ php build.php
 
 ## Перед запуском сайта
 
-- Домен `https://bestoncolog.ru` задан в `config.php` — от него строятся canonical, `og:url`, `sitemap.xml` и `robots.txt`. Перед запуском: направить DNS домена на сервер, выпустить сертификат (например, `certbot --nginx -d bestoncolog.ru -d www.bestoncolog.ru`) и включить редирект с http и www на `https://bestoncolog.ru`.
+- Домен `https://bestoncolog.ru` задан в `config.php` — от него строятся canonical и `og:url`. Перед запуском: направить DNS домена на сервер, выпустить сертификат (например, `certbot --nginx -d bestoncolog.ru -d www.bestoncolog.ru`) и включить редирект с http и www на `https://bestoncolog.ru`.
 - Создать администратора и в админке заменить название сайта и тексты.
 - Поменять язык (`lang`) в `config.php`, если нужно.
 - Подключить домен и HTTPS (Let's Encrypt): после этого включить в nginx `http2` и заголовок `Strict-Transport-Security`.

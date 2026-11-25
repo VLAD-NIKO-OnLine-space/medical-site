@@ -203,7 +203,6 @@ $https = ($_SERVER['HTTPS'] ?? '') !== '' && $_SERVER['HTTPS'] !== 'off';
 session_name('admin_sid');
 session_set_cookie_params(['path' => ADMIN_URL, 'httponly' => true, 'samesite' => 'Strict', 'secure' => $https]);
 session_start();
-header('X-Robots-Tag: noindex, nofollow');
 header('Cache-Control: no-store');
 header('X-Frame-Options: DENY');
 

@@ -32,7 +32,6 @@ foreach (pages() as $url => $file) {
     write($dist . $url . 'index.html', render($file, $url));
 }
 write("$dist/404.html", render_404());
-write("$dist/sitemap.xml", sitemap());
 write("$dist/robots.txt", robots());
 write("$dist/site.webmanifest", manifest());
 // сжатие, кэш и заголовки из public/.htaccess; маршрутизация через index.php статике не нужна
