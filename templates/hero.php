@@ -2,7 +2,6 @@
 $c = content('hero');
 $accentParts = preg_split('/[ \t\r\n]+/', typo($c['title_accent']), -1, PREG_SPLIT_NO_EMPTY);
 $chapterCount = count(content('program')['chapters']);
-$access = content('access');
 $programUrl = e($c['button_href']);
 $programButtonContent = icon('book-open', 'book-open-check') . e($c['button_text']);
 ?>
@@ -74,10 +73,10 @@ $programButtonContent = icon('book-open', 'book-open-check') . e($c['button_text
 <p><?= e(typo('Пересматривайте сколько угодно — на телефоне, планшете и компьютере')) ?></p>
 </li>
 <?php if (!client_has_access(current_client())): ?>
-<li class="hero-card hero-card--price">
-<strong class="hero-card__price"><?= e(str_replace(' ', "\u{00A0}", $access['price'])) ?></strong>
-<p><?= e(typo('Все главы — по цене одной консультации в частном центре')) ?></p>
-<a class="btn hero-card__buy" href="#dostup"><?= e($access['button_text']) ?><?= icon('arrow-right', '', 18) ?></a>
+<li class="hero-card hero-card--access">
+<strong class="hero-card__access-title">Полная версия видеогида</strong>
+<p><?= e(typo('Все главы открываются в личном кабинете.')) ?></p>
+<a class="btn hero-card__access-link" href="#dostup">Как получить доступ<?= icon('arrow-right', '', 18) ?></a>
 </li>
 <?php endif; ?>
 </ul>
