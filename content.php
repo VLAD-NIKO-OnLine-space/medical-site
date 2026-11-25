@@ -70,7 +70,7 @@ return [
             'video_label' => ['label' => 'Видео: подпись', 'type' => 'text', 'optional' => true, 'default' => 'Вступление'],
             'video_author' => ['label' => 'Видео: имя автора', 'type' => 'text', 'default' => 'Дмитренко Алексей Петрович'],
             'video_badge' => ['label' => 'Видео: метка', 'type' => 'text', 'optional' => true, 'default' => 'Чем полезен гид'],
-            'video_duration' => ['label' => 'Видео: длительность', 'type' => 'text', 'optional' => true, 'hint' => 'Например, «12 мин». Пусто — не показывается', 'default' => '3:28'],
+            'video_duration' => ['label' => 'Видео: длительность', 'type' => 'text', 'optional' => true, 'hint' => 'Описание кнопки видео для скринридеров, например «12 мин».', 'default' => '3:28'],
         ],
     ],
     'about' => [

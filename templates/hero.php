@@ -1,5 +1,7 @@
 <?php
 $c = content('hero');
+$video = video_embed($c['video_url']);
+$duration = $video ? $c['video_duration'] : '';
 $accentParts = preg_split('/[ \t\r\n]+/', typo($c['title_accent']), -1, PREG_SPLIT_NO_EMPTY);
 $chapterCount = count(content('program')['chapters']);
 $programUrl = e($c['button_href']);
@@ -7,7 +9,6 @@ $programButtonContent = icon('book-open', 'book-open-check') . e($c['button_text
 ?>
 <section class="hero">
 <?= picture($c['image'], '100vw', $c['image_alt'], 'fetchpriority="high"', 'hero__bg') ?>
-<?php $video = video_embed($c['video_url']); ?>
 <div class="container hero__inner">
 <div class="hero__content">
 <?php if ($c['eyebrow'] !== ''): ?>
@@ -24,7 +25,10 @@ $programButtonContent = icon('book-open', 'book-open-check') . e($c['button_text
 <a href="<?= $programUrl ?>" class="btn hero__btn hero__btn--desktop"><?= $programButtonContent ?></a>
 </div>
 <div class="video-card">
-<button class="video-card__media" type="button" aria-label="Смотреть видео: <?= e(implode(' — ', array_filter([$c['video_badge'], $c['video_label'], $c['video_author']], 'strlen'))) ?>"<?= $video ? ' data-video-open data-video-type="' . $video[0] . '" data-video-src="' . e($video[1]) . '"' : ' disabled' ?>>
+<button class="video-card__media" type="button"
+    aria-label="Смотреть видео: <?= e(implode(' — ', array_filter([$c['video_badge'], $c['video_label'], $c['video_author']], 'strlen'))) ?>"
+    <?= $duration !== '' ? 'aria-describedby="hero-video-duration"' : '' ?>
+    <?= $video ? 'data-video-open data-video-type="' . $video[0] . '" data-video-src="' . e($video[1]) . '"' : 'disabled' ?>>
 <?= picture($c['video_cover'], '(max-width: 1024px) 100vw, 55vw', '', 'decoding="async"') ?>
 <span class="video-card__kicker" aria-hidden="true">Презентация автора</span>
 <?php if ($c['video_badge'] !== ''): ?>
@@ -42,21 +46,10 @@ $programButtonContent = icon('book-open', 'book-open-check') . e($c['button_text
 <path d="<?= icons()['play'] ?>" fill="url(#hero-play-glass)" stroke="#e3f6f2" stroke-opacity=".56" stroke-width=".24"/>
 </svg>
 </span>
-<?php if ($video && $c['video_duration'] !== ''): ?>
-<span class="video-card__chip"><?= icon('clock', '', 16) ?><?= e($c['video_duration']) ?></span>
-<?php endif; ?>
 </button>
-<div class="video-card__info">
-<div>
-<?php if ($c['video_label'] !== ''): ?>
-<div class="video-card__label"><?= e($c['video_label']) ?></div>
+<?php if ($duration !== ''): ?>
+<span class="visually-hidden" id="hero-video-duration">Длительность — <?= e($duration) ?></span>
 <?php endif; ?>
-<div class="video-card__author"><?= e($c['video_author']) ?></div>
-</div>
-<?php if ($c['video_badge'] !== ''): ?>
-<span class="video-card__badge"><?= e($c['video_badge']) ?></span>
-<?php endif; ?>
-</div>
 </div>
 <div class="hero__actions-mobile">
 <a href="<?= $programUrl ?>" class="btn hero__btn hero__btn--mobile"><?= $programButtonContent ?></a>
