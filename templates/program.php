@@ -32,7 +32,11 @@ if ($access) {
     }
     $isPreview = str_starts_with($videoUrl, '/assets/video/chapter-previews/');
     $video = video_embed($videoUrl);
-    $playLabel = $isPreview ? 'Фрагмент' : 'Смотреть фрагмент';
+    $playLabel = match (true) {
+        $isPreview => 'Фрагмент',
+        $ch['title'] === 'Вступление' => 'Смотреть',
+        default => 'Смотреть фрагмент',
+    };
     $playAction = $isPreview ? 'Смотреть первые 30 секунд' : $playLabel;
 }
 ?>
@@ -52,9 +56,6 @@ if ($access) {
 <h3 class="chapter__title"><?= e(typo($ch['title'])) ?></h3>
 <?php if ($ch['text'] !== ''): ?>
 <p class="chapter__text"><?= e(typo($ch['text'])) ?></p>
-<?php endif; ?>
-<?php if ($ch['duration'] !== ''): ?>
-<p class="chapter__duration"><?= icon('clock', '', 16) ?><?= e($ch['duration']) ?></p>
 <?php endif; ?>
 <?php /* «Обмен опытом»: с доступом — чат главы (chat.js), без доступа — окно с предложением купить */ ?>
 <div class="chapter__exchange">
@@ -80,10 +81,8 @@ if ($access) {
 <?php if (!$access): ?>
 <template data-video-preview-end-template>
 <div class="video-modal__preview-end">
-<p class="video-modal__preview-title">Фрагмент завершён</p>
-<p>Откройте доступ, чтобы посмотреть главу целиком.</p>
-<a class="btn video-modal__preview-action" href="#dostup" data-video-close>Купить доступ<?= icon('arrow-right', '', 18) ?></a>
-<button class="video-modal__preview-replay" type="button" data-video-preview-replay>Смотреть ещё раз</button>
+<p tabindex="-1">Откройте доступ, чтобы посмотреть главу целиком.</p>
+<a class="btn video-modal__preview-action" href="#kupit-dostup" data-video-close>Купить доступ<?= icon('arrow-right', '', 18) ?></a>
 </div>
 </template>
 <?php endif; ?>

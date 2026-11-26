@@ -21,7 +21,7 @@ $docIcons = ['file-text', 'shield-check'];
 <?php endif; ?>
 </div>
 <div class="access__purchase">
-<div class="access-card">
+<div class="access-card" id="kupit-dostup">
 <img class="access-card__photo" src="<?= e(asset('/assets/img/access-card-room-v1.webp')) ?>" width="900" height="1350" alt="" loading="lazy" decoding="async">
 <?php if ($c['card_label'] !== ''): ?>
 <p class="access-card__label"><?= e($c['card_label']) ?></p>

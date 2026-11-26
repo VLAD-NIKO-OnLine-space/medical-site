@@ -241,6 +241,26 @@ function chapter_full_video(array $chapter): ?array
     return video_embed($url);
 }
 
+function video_play_icon(string $gradientId): string
+{
+    $id = e($gradientId);
+    $path = icons()['play'];
+    return <<<HTML
+<span class="video-card__play" aria-hidden="true">
+<svg viewBox="3 1 20 22" focusable="false">
+<defs>
+<linearGradient id="$id" x2="76%" y2="100%">
+<stop stop-color="#e7f3f1" stop-opacity=".62"/>
+<stop offset=".52" stop-color="#9fb7b5" stop-opacity=".44"/>
+<stop offset="1" stop-color="#395955" stop-opacity=".76"/>
+</linearGradient>
+</defs>
+<path d="$path" fill="url(#$id)" stroke="#e3f6f2" stroke-opacity=".56" stroke-width=".24"/>
+</svg>
+</span>
+HTML;
+}
+
 function db(): PDO
 {
     static $pdo;

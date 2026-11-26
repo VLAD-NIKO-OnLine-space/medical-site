@@ -88,7 +88,6 @@ if (modal) {
   function addPreviewEnding(player) {
     const controls = frame.querySelector(".video-controls");
     const ending = previewEndTemplate.content.firstElementChild.cloneNode(true);
-    const action = ending.querySelector("a");
 
     player.addEventListener("ended", async () => {
       if (document.fullscreenElement === frame || document.fullscreenElement === player) {
@@ -100,17 +99,8 @@ if (modal) {
       player.inert = true;
       if (controls) controls.inert = true;
       frame.append(ending);
-      action.focus({ preventScroll: true });
-    });
-
-    ending.querySelector("[data-video-preview-replay]").addEventListener("click", () => {
-      ending.remove();
-      player.inert = false;
-      if (controls) controls.inert = false;
-      player.currentTime = 0;
-      (controls?.querySelector("[data-video-play]") ?? player).focus({ preventScroll: true });
-      player.play().catch(() => {});
-    });
+      ending.querySelector("p").focus({ preventScroll: true });
+    }, { once: true });
   }
 
   function showError(player) {

@@ -12,37 +12,13 @@ $access = client_has_access($me);
 $p = content('program');
 $chapters = $p['chapters'];
 $support = content('footer')['email'];
-$profileName = $me['name'] !== '' ? $me['name'] : $me['login'];
-$chapterVideos = [];
-$introVideo = null;
-foreach ($chapters as $i => $chapter) {
-    $chapterVideos[$i] = chapter_full_video($chapter);
-    if ($chapter['title'] === 'Вступление' && !$introVideo) {
-        $introVideo = $chapterVideos[$i];
-    }
-}
-$availableCount = count(array_filter($chapterVideos));
-$chapterCount = count($chapters);
-$chapterWord = plural($chapterCount, ['главы', 'глав', 'глав']);
-$availability = $chapterCount ? "Можно смотреть $availableCount из $chapterCount $chapterWord" : 'Главы появятся здесь.';
+$chapterVideos = array_map('chapter_full_video', $chapters);
 $page['title'] = 'Личный кабинет — ' . content('site')['name'];
 $page['description'] = 'Личный кабинет зрителя видеогида.';
 ?>
 <section class="cabinet" aria-labelledby="cabinet-title">
 <div class="container">
 <div class="cabinet__welcome">
-<div class="cabinet__profile-row">
-<div class="cabinet__profile">
-<span class="cabinet__profile-avatar" aria-hidden="true"><?= e(initials($profileName)) ?></span>
-<span class="cabinet__profile-text">
-<span>Личный кабинет</span>
-<strong title="<?= e($profileName) ?>"><?= e($profileName) ?></strong>
-</span>
-</div>
-<form method="post" action="/vyhod/">
-<button class="cabinet__logout" type="submit"><?= icon('log-out', '', 17) ?>Выйти</button>
-</form>
-</div>
 <div class="cabinet__intro">
 <h1 class="cabinet__title" id="cabinet-title">Ваш <span>видеогид</span></h1>
 <p><?= e(typo('Рак молочной железы. О лечении и жизни после него.')) ?></p>
@@ -53,7 +29,9 @@ $page['description'] = 'Личный кабинет зрителя видеог�
 <div>
 <?php if ($access): ?>
 <p class="cabinet__status-title">Доступ открыт</p>
-<p class="cabinet__status-text"><?= e(typo($availability)) ?></p>
+<?php if (!$chapters): ?>
+<p class="cabinet__status-text">Главы появятся здесь.</p>
+<?php endif; ?>
 <?php else: ?>
 <p class="cabinet__status-title">Доступ закрыт</p>
 <p class="cabinet__status-text">Если доступ уже оплачен, напишите в поддержку.</p>
@@ -67,16 +45,9 @@ $page['description'] = 'Личный кабинет зрителя видеог�
 <?php endif; ?>
 </div>
 <?php if ($access): ?>
-<div class="cabinet__shortcuts">
-<?php if ($introVideo): ?>
-<button class="cabinet__shortcut" type="button" data-video-open data-video-type="<?= $introVideo[0] ?>" data-video-src="<?= e($introVideo[1]) ?>" aria-label="Смотреть вступление">
-<span class="cabinet__shortcut-icon"><?= icon('play', '', 18) ?></span>Вступление
-</button>
-<?php endif; ?>
 <button class="cabinet__shortcut" type="button" data-review-open aria-haspopup="dialog">
 <span class="cabinet__shortcut-icon"><?= icon('message-square-plus', '', 18) ?></span>Оставить отзыв
 </button>
-</div>
 <?php endif; ?>
 </div>
 <?php if ($chapters): ?>
@@ -104,7 +75,7 @@ $portrait = match ($i + 1) {
 <span class="cabinet__cover-label">Глава</span>
 <span class="cabinet__cover-num"><?= $num ?></span>
 <?php if ($playable): ?>
-<span class="cabinet__cover-play" aria-hidden="true"><?= icon('play', '', 24) ?></span>
+<?= video_play_icon('cabinet-play-glass-' . $num) ?>
 <?php else: ?>
 <span class="cabinet__cover-chip cabinet__cover-chip--status"><?= icon($video ? 'lock' : 'clock', '', 14) ?><?= $video ? 'Доступ закрыт' : 'Видео скоро' ?></span>
 <?php endif; ?>
