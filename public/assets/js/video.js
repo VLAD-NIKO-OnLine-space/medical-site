@@ -7,7 +7,9 @@ if (modal) {
   const previewEndTemplate = document.querySelector("[data-video-preview-end-template]");
   const touchPlayer = window.matchMedia("(pointer: coarse), (max-width: 640px)");
   const hlsType = "application/vnd.apple.mpegurl";
+  const playbackUrl = "/course-video/playback/";
   let stream;
+  let coursePlayback;
 
   function formatTime(time) {
     if (!Number.isFinite(time)) return "—";
@@ -15,7 +17,7 @@ if (modal) {
     return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
   }
 
-  function addControls(player) {
+  function addControls(player, marked) {
     const controls = controlsTemplate.content.firstElementChild.cloneNode(true);
     const play = controls.querySelector("[data-video-play]");
     const mute = controls.querySelector("[data-video-mute]");
@@ -66,11 +68,17 @@ if (modal) {
     seek.addEventListener("input", () => { player.currentTime = seek.valueAsNumber; });
 
     const standardFullscreen = document.fullscreenEnabled && typeof frame.requestFullscreen === "function";
-    fullscreen.hidden = !standardFullscreen && typeof player.webkitEnterFullscreen !== "function";
+    fullscreen.hidden = !marked && !standardFullscreen && typeof player.webkitEnterFullscreen !== "function";
     fullscreen.addEventListener("click", async () => {
       try {
         if (document.fullscreenElement === frame) await document.exitFullscreen();
-        else if (standardFullscreen) await frame.requestFullscreen();
+        else if (modal.classList.contains("video-modal--expanded")) modal.classList.remove("video-modal--expanded");
+        else if (standardFullscreen) {
+          await frame.requestFullscreen().catch((error) => {
+            if (!marked) throw error;
+            modal.classList.add("video-modal--expanded");
+          });
+        } else if (marked) modal.classList.add("video-modal--expanded");
         else player.webkitEnterFullscreen();
         notice.textContent = "";
       } catch {
@@ -103,15 +111,90 @@ if (modal) {
     }, { once: true });
   }
 
-  function showError(player) {
+  function playbackHeaders(id) {
+    return { "X-Course-Playback": "1", "X-Playback-Id": id };
+  }
+
+  function endCoursePlayback() {
+    const current = coursePlayback;
+    if (!current) return;
+    coursePlayback = undefined;
+    clearInterval(current.timer);
+    current.controller.abort();
+    if (current.id) {
+      fetch(playbackUrl, { method: "DELETE", headers: playbackHeaders(current.id), keepalive: true }).catch(() => {});
+    }
+  }
+
+  function resetPlayback() {
+    frame.querySelector("video")?.pause();
+    frame.replaceChildren();
+    stream?.destroy();
+    stream = undefined;
+    endCoursePlayback();
+    modal.classList.remove("video-modal--expanded");
+  }
+
+  function showError(player, text = "Видео не загрузилось. Попробуйте открыть его ещё раз или сменить браузер.") {
     if (!modal.open || !frame.contains(player)) return;
     const message = document.createElement("p");
     message.className = "video-modal__error";
     message.setAttribute("role", "alert");
-    message.textContent = "Видео не загрузилось. Попробуйте открыть его ещё раз или сменить браузер.";
-    frame.replaceChildren(message);
-    stream?.destroy();
-    stream = undefined;
+    message.textContent = text;
+    resetPlayback();
+    frame.append(message);
+    if (document.fullscreenElement === frame) document.exitFullscreen().catch(() => {});
+  }
+
+  function checkCoursePlayback(current) {
+    current.check ??= fetch(playbackUrl, {
+      headers: playbackHeaders(current.id),
+      cache: "no-store",
+      signal: current.controller.signal,
+    }).then((response) => {
+      if (current !== coursePlayback) return;
+      if (response.status === 409) {
+        showError(current.player, "Видео открыто на другом устройстве или в другой вкладке. Откройте главу снова, чтобы продолжить здесь.");
+      } else if (response.status === 403) {
+        showError(current.player, "Сеанс завершён. Войдите в личный кабинет снова.");
+      }
+    }).catch(() => {}).finally(() => { current.check = undefined; });
+    return current.check;
+  }
+
+  async function handlePlaybackError(player) {
+    const current = coursePlayback;
+    if (current?.player === player && current.id) await checkCoursePlayback(current);
+    showError(player);
+  }
+
+  async function startCoursePlayback(player, chapter, mark) {
+    const current = { player, controller: new AbortController() };
+    coursePlayback = current;
+    try {
+      const response = await fetch(playbackUrl, {
+        method: "POST",
+        headers: { "X-Course-Playback": "1" },
+        body: new URLSearchParams({ chapter }),
+        signal: current.controller.signal,
+      });
+      if (response.status === 403) {
+        showError(player, "Сеанс завершён. Войдите в личный кабинет снова.");
+        return;
+      }
+      if (!response.ok) {
+        showError(player);
+        return;
+      }
+      const data = await response.json();
+      if (current !== coursePlayback || !modal.open || !frame.contains(player)) return;
+      current.id = data.playback;
+      mark.textContent = data.watermark;
+      current.timer = setInterval(() => checkCoursePlayback(current), 5000);
+      playStream(player, data.src);
+    } catch {
+      if (current === coursePlayback) showError(player);
+    }
   }
 
   async function playStream(player, src) {
@@ -131,7 +214,7 @@ if (modal) {
       const playback = new Hls();
       stream = playback;
       playback.on(Hls.Events.ERROR, (_, error) => {
-        if (error.fatal) showError(player);
+        if (error.fatal) handlePlaybackError(player);
       });
       playback.loadSource(src);
       playback.attachMedia(player);
@@ -142,8 +225,10 @@ if (modal) {
 
   document.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-video-open]");
-    if (!btn) return;
+    if (!btn || modal.open) return;
+    resetPlayback();
     const { videoType, videoSrc } = btn.dataset;
+    const courseChapter = /^\/course-video\/(chapter-[0-9]{2})\/index\.m3u8$/.exec(videoSrc)?.[1];
     const useTouchPlayer = touchPlayer.matches;
     let player;
     if (videoType === "file" || videoType === "hls") {
@@ -152,7 +237,7 @@ if (modal) {
       player.autoplay = true;
       player.playsInline = true;
       player.setAttribute("controlslist", "nodownload");
-      player.addEventListener("error", () => showError(player));
+      player.addEventListener("error", () => handlePlaybackError(player));
     } else {
       player = document.createElement("iframe");
       player.allow = "autoplay; fullscreen; picture-in-picture; encrypted-media";
@@ -161,14 +246,36 @@ if (modal) {
     }
     modal.setAttribute("aria-label", btn.getAttribute("aria-label") || "Видео");
     modal.classList.toggle("video-modal--touch", useTouchPlayer);
-    frame.replaceChildren(player);
+    let watermark;
+    if (courseChapter) {
+      const picture = document.createElement("div");
+      picture.className = "video-modal__picture";
+      watermark = document.createElement("span");
+      watermark.className = "video-modal__watermark";
+      watermark.setAttribute("aria-hidden", "true");
+      picture.append(player, watermark);
+      frame.replaceChildren(picture);
+      player.disablePictureInPicture = true;
+      player.disableRemotePlayback = true;
+      player.addEventListener("timeupdate", () => {
+        const position = String(Math.floor(player.currentTime / 15) % 3);
+        if (watermark.dataset.position !== position) watermark.dataset.position = position;
+      });
+    } else {
+      frame.replaceChildren(player);
+    }
     if (player instanceof HTMLVideoElement) {
-      if (useTouchPlayer && controlsTemplate) addControls(player);
+      if ((useTouchPlayer || courseChapter) && controlsTemplate) addControls(player, Boolean(courseChapter));
       if (previewEndTemplate && btn.hasAttribute("data-video-preview")) addPreviewEnding(player);
     }
     modal.showModal();
-    if (videoType === "hls") playStream(player, videoSrc);
+    if (courseChapter) startCoursePlayback(player, courseChapter, watermark);
+    else if (videoType === "hls") playStream(player, videoSrc);
     else player.src = videoSrc;
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && coursePlayback?.id) checkCoursePlayback(coursePlayback);
   });
 
   modal.addEventListener("click", (e) => {
@@ -176,9 +283,6 @@ if (modal) {
     if (desktopBackdrop || e.target.closest("[data-video-close]")) modal.close();
   });
   modal.addEventListener("close", () => {
-    frame.querySelector("video")?.pause();
-    frame.replaceChildren();
-    stream?.destroy();
-    stream = undefined;
+    if (!modal.open) resetPlayback();
   });
 }

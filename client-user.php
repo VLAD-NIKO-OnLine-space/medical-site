@@ -13,5 +13,4 @@ if (count($args) < 2) {
 }
 [$login, $password] = $args;
 client_upsert($login, $password, $args[2] ?? $login, $args[3] ?? '', $close);
-@chown(__DIR__ . '/data/site.sqlite', 'www-data');
 echo "Клиент «{$login}» сохранён, доступ " . ($close ? 'закрыт' : 'бессрочный') . ".\n";

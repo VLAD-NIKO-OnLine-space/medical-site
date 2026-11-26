@@ -72,7 +72,7 @@ if ($group === 'reviews') {
 <?php
 $messages = chat_recent();
 $chapters = content('program')['chapters'];
-$clients = client_db()->query('SELECT login, name, email, access_until, created_at FROM clients ORDER BY id DESC')->fetchAll();
+$clients = client_db()->query('SELECT id, login, name, email, access_until, created_at FROM clients ORDER BY id DESC')->fetchAll();
 ?>
 <section class="panel" id="story">
 <h2 class="panel__title">Добавить опыт</h2>
@@ -131,7 +131,7 @@ $clients = client_db()->query('SELECT login, name, email, access_until, created_
 <p class="field__hint">Пока оплата не подключена, клиентов добавляют командой на сервере: <code>php client-user.php логин пароль "Имя" почта</code>, доступ бессрочный; закрыть доступ — то же с <code>--close</code>.</p>
 <div class="clients">
 <?php foreach ($clients as $cl): ?>
-<p class="clients__row"><strong><?= e($cl['name']) ?></strong> · <?= e($cl['login']) ?><?= $cl['email'] !== '' ? ' · ' . e($cl['email']) : '' ?> · <?= client_has_access($cl) ? 'доступ бессрочный' : '<span class="clients__off">доступ закрыт</span>' ?></p>
+<p class="clients__row"><strong><?= e($cl['name']) ?></strong> · <?= e($cl['login']) ?><?= $cl['email'] !== '' ? ' · ' . e($cl['email']) : '' ?> · <?= client_has_access($cl) ? 'доступ бессрочный' : '<span class="clients__off">доступ закрыт</span>' ?> · Код видео <code><?= e(client_watermark_code((int) $cl['id'])) ?></code></p>
 <?php endforeach; ?>
 </div>
 </section>

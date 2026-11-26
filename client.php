@@ -15,9 +15,16 @@ function client_db(): PDO
         $db->exec('CREATE TABLE IF NOT EXISTS clients (id INTEGER PRIMARY KEY AUTOINCREMENT, login TEXT NOT NULL UNIQUE COLLATE NOCASE, email TEXT NOT NULL DEFAULT \'\', name TEXT NOT NULL, password_hash TEXT NOT NULL, access_until INTEGER NOT NULL, created_at INTEGER NOT NULL)');
         $db->exec('CREATE TABLE IF NOT EXISTS client_tokens (token_hash TEXT PRIMARY KEY, client_id INTEGER NOT NULL, expires INTEGER NOT NULL)');
         $db->exec('CREATE TABLE IF NOT EXISTS client_attempts (ip TEXT NOT NULL, at INTEGER NOT NULL)');
+        $db->exec('CREATE TABLE IF NOT EXISTS client_playbacks (client_id INTEGER PRIMARY KEY, login_hash TEXT NOT NULL, playback_hash TEXT NOT NULL, chapter TEXT NOT NULL)');
         $ready = true;
     }
     return $db;
+}
+
+function client_token_hash(): ?string
+{
+    $token = $_COOKIE[CLIENT_COOKIE] ?? '';
+    return is_string($token) && preg_match('/^[0-9a-f]{64}$/D', $token) ? hash('sha256', $token) : null;
 }
 
 /** Вошедший клиент или null. Результат запоминается на время запроса. */
@@ -28,12 +35,12 @@ function current_client(): ?array
         return $client;
     }
     $client = null;
-    $token = $_COOKIE[CLIENT_COOKIE] ?? '';
-    if (!is_string($token) || !preg_match('/^[0-9a-f]{64}$/', $token)) {
+    $hash = client_token_hash();
+    if ($hash === null) {
         return null;
     }
     $q = client_db()->prepare('SELECT c.* FROM client_tokens t JOIN clients c ON c.id = t.client_id WHERE t.token_hash = ? AND t.expires > ?');
-    $q->execute([hash('sha256', $token), time()]);
+    $q->execute([$hash, time()]);
     $client = $q->fetch() ?: null;
     return $client;
 }
@@ -42,6 +49,11 @@ function client_has_access(?array $client): bool
 {
     // access_until = 0 — доступ бессрочный (так у всех покупателей); дата — только если доступ закрыли вручную
     return $client !== null && ((int) $client['access_until'] === 0 || (int) $client['access_until'] > time());
+}
+
+function client_watermark_code(int $id): string
+{
+    return 'BO-' . str_pad((string) $id, 4, '0', STR_PAD_LEFT);
 }
 
 function client_cookie(string $value, int $expires): void
@@ -72,16 +84,21 @@ function client_login(string $login, string $password): ?string
     $db->prepare('DELETE FROM client_tokens WHERE expires < ?')->execute([time()]);
     $token = bin2hex(random_bytes(32));
     $expires = time() + CLIENT_REMEMBER;
-    $db->prepare('INSERT INTO client_tokens (token_hash, client_id, expires) VALUES (?, ?, ?)')->execute([hash('sha256', $token), $client['id'], $expires]);
+    // Пароль мог измениться, пока запрос проверял предыдущий хеш.
+    $insert = $db->prepare('INSERT INTO client_tokens (token_hash, client_id, expires) SELECT ?, id, ? FROM clients WHERE id = ? AND password_hash = ?');
+    $insert->execute([hash('sha256', $token), $expires, $client['id'], $client['password_hash']]);
+    if ($insert->rowCount() !== 1) {
+        return 'Пароль изменился. Войдите с новым паролем.';
+    }
     client_cookie($token, $expires);
     return null;
 }
 
 function client_logout(): void
 {
-    $token = $_COOKIE[CLIENT_COOKIE] ?? '';
-    if (is_string($token) && $token !== '') {
-        client_db()->prepare('DELETE FROM client_tokens WHERE token_hash = ?')->execute([hash('sha256', $token)]);
+    $hash = client_token_hash();
+    if ($hash !== null) {
+        client_db()->prepare('DELETE FROM client_tokens WHERE token_hash = ?')->execute([$hash]);
     }
     client_cookie('', time() - 3600);
 }
@@ -99,11 +116,19 @@ function client_upsert(string $login, string $password, string $name, string $em
     $db = client_db();
     $hash = password_hash($password, PASSWORD_DEFAULT);
     $until = $closed ? time() - 1 : 0;
-    $q = $db->prepare('SELECT id FROM clients WHERE login = ?');
-    $q->execute([$login]);
-    if ($id = $q->fetchColumn()) {
-        $db->prepare('UPDATE clients SET password_hash = ?, name = ?, email = ?, access_until = ? WHERE id = ?')->execute([$hash, $name, $email, $until, $id]);
-    } else {
-        $db->prepare('INSERT INTO clients (login, email, name, password_hash, access_until, created_at) VALUES (?, ?, ?, ?, ?, ?)')->execute([$login, $email, $name, $hash, $until, time()]);
+    $db->beginTransaction();
+    try {
+        $q = $db->prepare('INSERT INTO clients (login, email, name, password_hash, access_until, created_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(login) DO UPDATE SET email = excluded.email, name = excluded.name, password_hash = excluded.password_hash, access_until = excluded.access_until');
+        $q->execute([$login, $email, $name, $hash, $until, time()]);
+        $q = $db->prepare('SELECT id FROM clients WHERE login = ?');
+        $q->execute([$login]);
+        $id = $q->fetchColumn();
+        $q->closeCursor();
+        $db->prepare('DELETE FROM client_tokens WHERE client_id = ?')->execute([$id]);
+        $db->prepare('DELETE FROM client_playbacks WHERE client_id = ?')->execute([$id]);
+        $db->commit();
+    } catch (Throwable $error) {
+        $db->rollBack();
+        throw $error;
     }
 }
