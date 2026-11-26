@@ -11,9 +11,6 @@ $programButtonContent = icon('book-open', 'book-open-check') . e($c['button_text
 <?= picture($c['image'], '100vw', $c['image_alt'], 'fetchpriority="high"', 'hero__bg') ?>
 <div class="container hero__inner">
 <div class="hero__content">
-<?php if ($c['eyebrow'] !== ''): ?>
-<div class="eyebrow"><?= e($c['eyebrow']) ?></div>
-<?php endif; ?>
 <h1 class="hero__title"><?= e(typo($c['title'])) ?><?php if ($accentParts): ?>
  <span class="text-accent hero__title-accent"><?= implode(' ', array_map(
     fn($part) => '<span class="hero__title-accent-part">' . e($part) . '</span>',
@@ -65,13 +62,17 @@ $programButtonContent = icon('book-open', 'book-open-check') . e($c['button_text
 </div>
 <p><?= e(typo('Пересматривайте сколько угодно — на телефоне, планшете и компьютере')) ?></p>
 </li>
-<?php if (!client_has_access(current_client())): ?>
 <li class="hero-card hero-card--access">
+<?php if (client_has_access(current_client())): ?>
+<strong class="hero-card__access-title">Ваш видеогид</strong>
+<p>Выберите главу в личном кабинете.</p>
+<a class="btn hero-card__access-link" href="/kabinet/">Продолжить просмотр<?= icon('arrow-right', '', 18) ?></a>
+<?php else: ?>
 <strong class="hero-card__access-title">Полная версия видеогида</strong>
 <p><?= e(typo('Все главы открываются в личном кабинете.')) ?></p>
 <a class="btn hero-card__access-link" href="#dostup">Как получить доступ<?= icon('arrow-right', '', 18) ?></a>
-</li>
 <?php endif; ?>
+</li>
 </ul>
 </div>
 </div>

@@ -2,12 +2,18 @@
 require __DIR__ . '/../lib.php';
 
 $url = rawurldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+$courseVideo = str_starts_with($url, '/course-video/');
 
-if (PHP_SAPI === 'cli-server' && $url !== '/' && is_file(__DIR__ . $url)) {
+if (PHP_SAPI === 'cli-server' && !$courseVideo && $url !== '/' && is_file(__DIR__ . $url)) {
     return false;
 }
 
 header('X-Robots-Tag: ' . SITE_ROBOTS);
+
+if ($courseVideo) {
+    require __DIR__ . '/../course-video.php';
+    serve_course_video($url);
+}
 
 if ($url === '/sitemap.xml') {
     http_response_code(410);

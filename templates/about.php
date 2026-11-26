@@ -6,9 +6,6 @@ $pointIcons = ['message-circle', 'list-checks', 'award'];
 <section class="about" id="o-gide" aria-labelledby="about-title">
 <div class="container about__grid">
 <div class="about__intro">
-<?php if ($c['eyebrow'] !== ''): ?>
-<div class="eyebrow"><?= e($c['eyebrow']) ?></div>
-<?php endif; ?>
 <h2 class="section-title" id="about-title"><?= e(typo($c['title'])) ?><?php if ($c['title_accent'] !== ''): ?><br> <span class="text-accent"><?= e(typo($c['title_accent'])) ?></span><?php endif; ?></h2>
 <?php if ($c['lead'] !== ''): ?>
 <p class="about__lead"><?= nl2br(e(typo($c['lead'])), false) ?></p>

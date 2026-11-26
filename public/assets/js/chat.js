@@ -6,7 +6,6 @@ if (modal) {
   const list = modal.querySelector("[data-chat-list]");
   const form = modal.querySelector("[data-chat-form]");
   const input = form.querySelector("textarea");
-  const titleInput = form.querySelector("[name=title]");
   const send = form.querySelector("button");
   const error = modal.querySelector("[data-chat-error]");
   const chapterEl = modal.querySelector("[data-chat-chapter]");
@@ -30,6 +29,10 @@ if (modal) {
   let timer;
   let opener;
   let lastId = -1;
+  let sending = false;
+
+  const syncSend = () => { send.disabled = sending || !input.value.trim(); };
+  input.addEventListener("input", syncSend);
 
   const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
@@ -81,6 +84,7 @@ if (modal) {
     form.hidden = false;
     auth.hidden = true;
     list.hidden = false;
+    syncSend();
     modal.showModal();
     modal.focus();
     load();
@@ -90,19 +94,19 @@ if (modal) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const text = input.value.trim();
-    if (!text) return;
-    send.disabled = true;
+    if (sending || !text) return;
+    sending = true;
+    input.readOnly = true;
+    syncSend();
     showError();
     try {
       const body = new FormData();
       body.set("ch", chapter);
       body.set("text", text);
-      body.set("title", titleInput.value.trim());
       const res = await fetch("/chat/", { method: "POST", body, headers: { Accept: "application/json" } });
       const data = await res.json();
       if (data.ok) {
         input.value = "";
-        titleInput.value = "";
         lastId = -2; // своё сообщение — всегда прокрутить вниз
         render(data.messages);
         list.scrollTop = list.scrollHeight;
@@ -111,16 +115,10 @@ if (modal) {
     } catch {
       showError("Нет связи с сайтом. Проверьте интернет и попробуйте ещё раз.");
     } finally {
-      send.disabled = false;
-      input.focus();
-    }
-  });
-
-  // Enter в поле главной мысли — перейти к комментарию
-  titleInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.isComposing) {
-      e.preventDefault();
-      input.focus();
+      sending = false;
+      input.readOnly = false;
+      syncSend();
+      if (modal.open && !form.hidden) input.focus();
     }
   });
 
@@ -128,7 +126,7 @@ if (modal) {
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
       e.preventDefault();
-      form.requestSubmit();
+      if (!send.disabled) form.requestSubmit();
     }
   });
 

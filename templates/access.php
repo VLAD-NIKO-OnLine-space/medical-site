@@ -11,9 +11,6 @@ $docIcons = ['file-text', 'shield-check'];
 <section class="access" id="dostup" aria-labelledby="access-title">
 <div class="container access__grid">
 <div class="access__body">
-<?php if ($c['eyebrow'] !== ''): ?>
-<div class="eyebrow"><?= e($c['eyebrow']) ?></div>
-<?php endif; ?>
 <h2 class="section-title" id="access-title"><?= e(typo($c['title'])) ?><?php if ($c['title_accent'] !== ''): ?> <span class="text-accent"><?= e(typo($c['title_accent'])) ?></span><?php endif; ?></h2>
 <?php if ($c['steps']): ?>
 <ol class="access__steps">
@@ -22,11 +19,10 @@ $docIcons = ['file-text', 'shield-check'];
 <?php endforeach; ?>
 </ol>
 <?php endif; ?>
-<?php if ($c['note'] !== ''): ?>
-<p class="access__note"><?= icon('info', '', 18) ?><small><?= e(typo($c['note'])) ?></small></p>
-<?php endif; ?>
 </div>
+<div class="access__purchase">
 <div class="access-card">
+<img class="access-card__photo" src="<?= e(asset('/assets/img/access-card-room-v1.webp')) ?>" width="900" height="1350" alt="" loading="lazy" decoding="async">
 <?php if ($c['card_label'] !== ''): ?>
 <p class="access-card__label"><?= e($c['card_label']) ?></p>
 <?php endif; ?>
@@ -54,6 +50,10 @@ $docIcons = ['file-text', 'shield-check'];
 <?php endif; ?>
 <?php if ($c['card_note'] !== ''): ?>
 <p class="access-card__note"><small><?= nl2br(e(typo($c['card_note'])), false) ?></small></p>
+<?php endif; ?>
+</div>
+<?php if ($c['note'] !== ''): ?>
+<p class="access__note"><?= icon('info', '', 18) ?><small><?= e(typo($c['note'])) ?></small></p>
 <?php endif; ?>
 </div>
 </div>

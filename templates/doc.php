@@ -13,10 +13,7 @@ $page['description'] = $c['meta_description'];
 ?>
 <article class="doc" aria-labelledby="doc-title">
 <header class="container doc__head">
-<?php if ($c['eyebrow'] !== ''): ?>
-<div class="eyebrow"><?= e($c['eyebrow']) ?></div>
-<?php endif; ?>
-<h1 class="doc__title" id="doc-title"><?= e(typo($c['title'])) ?><?php if ($c['title_accent'] !== ''): ?> <span class="text-accent"><?= e(typo($c['title_accent'])) ?></span><?php endif; ?></h1>
+<h1 class="doc__title<?= empty($compactTitle) ? '' : ' doc__title--compact' ?>" id="doc-title"><?= e(typo($c['title'])) ?><?php if ($c['title_accent'] !== ''): ?> <span class="text-accent"><?= e(typo($c['title_accent'])) ?></span><?php endif; ?></h1>
 <?php if ($c['updated'] !== ''): ?>
 <p class="doc__updated"><?= icon('calendar', '', 18) ?><?= e($c['updated']) ?></p>
 <?php endif; ?>

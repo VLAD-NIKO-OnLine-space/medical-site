@@ -9,29 +9,44 @@ if ($c['chapters']) {
 <section class="program" id="programma" aria-labelledby="program-title">
 <?= picture($c['image'], '100vw', '', 'loading="lazy" decoding="async"', 'program__bg') ?>
 <div class="container program__head">
-<div class="program__intro">
-<?php if ($c['eyebrow'] !== ''): ?>
-<div class="eyebrow"><?= e($c['eyebrow']) ?></div>
-<?php endif; ?>
 <h2 class="section-title" id="program-title"><?= e(typo($c['title'])) ?><?php if ($c['title_accent'] !== ''): ?><br> <span class="text-accent"><?= e(typo($c['title_accent'])) ?></span><?php endif; ?></h2>
-</div>
-<?php if ($c['lead'] !== ''): ?>
-<p class="program__lead"><?= nl2br(e(typo($c['lead'])), false) ?></p>
-<?php endif; ?>
 </div>
 <?php if ($c['chapters']): ?>
 <div class="container">
 <div class="chapters swiper" data-chapters>
 <ol class="swiper-wrapper">
 <?php foreach ($c['chapters'] as $i => $ch): ?>
-<?php $video = video_embed($ch['video_url']); ?>
+<?php
+$isPreview = false;
+if ($access) {
+    $video = chapter_full_video($ch);
+    $playLabel = 'Смотреть';
+    $playAction = 'Смотреть главу';
+} else {
+    $videoUrl = $ch['video_url'] ?? '';
+    if ($videoUrl === '' && preg_match('~\A/course-video/(chapter-[0-9]{2})/index\.m3u8\z~', $ch['full_url'] ?? '', $stream)) {
+        $previewUrl = '/assets/video/chapter-previews/' . $stream[1] . '/index.m3u8';
+        if (is_file(__DIR__ . '/../public' . $previewUrl)) {
+            $videoUrl = asset($previewUrl);
+        }
+    }
+    $isPreview = str_starts_with($videoUrl, '/assets/video/chapter-previews/');
+    $video = video_embed($videoUrl);
+    $playLabel = $isPreview ? 'Фрагмент' : 'Смотреть фрагмент';
+    $playAction = $isPreview ? 'Смотреть первые 30 секунд' : $playLabel;
+}
+?>
 <li class="chapter swiper-slide">
 <div class="chapter__top">
 <span class="chapter__label">Глава <span class="chapter__num"><?= sprintf('%02d', $i + 1) ?></span></span>
 <?php if ($video): ?>
-<button class="chapter__play" type="button" data-video-open data-video-type="<?= $video[0] ?>" data-video-src="<?= e($video[1]) ?>" aria-label="Смотреть фрагмент: <?= e($ch['title']) ?>"><?= icon('play', '', 14) ?>Смотреть фрагмент</button>
+<button class="chapter__play" type="button" data-video-open data-video-type="<?= $video[0] ?>" data-video-src="<?= e($video[1]) ?>"<?= $isPreview ? ' data-video-preview' : '' ?> aria-label="<?= $playAction ?>: <?= e($ch['title']) ?>">
+<span class="chapter__play-icon"><?= icon('play', '', 13) ?></span>
+<span><?= $playLabel ?></span>
+<?php if ($isPreview): ?><span class="chapter__play-time">0:30</span><?php endif; ?>
+</button>
 <?php else: ?>
-<span class="chapter__soon"><?= icon('lock', '', 14) ?>Скоро</span>
+<span class="chapter__soon"><?= icon('lock', '', 14) ?><?= $access || empty($ch['full_url']) ? 'Скоро' : 'В кабинете' ?></span>
 <?php endif; ?>
 </div>
 <h3 class="chapter__title"><?= e(typo($ch['title'])) ?></h3>
@@ -62,6 +77,16 @@ if ($c['chapters']) {
 </div>
 </div>
 </div>
+<?php if (!$access): ?>
+<template data-video-preview-end-template>
+<div class="video-modal__preview-end">
+<p class="video-modal__preview-title">Фрагмент завершён</p>
+<p>Откройте доступ, чтобы посмотреть главу целиком.</p>
+<a class="btn video-modal__preview-action" href="#dostup" data-video-close>Купить доступ<?= icon('arrow-right', '', 18) ?></a>
+<button class="video-modal__preview-replay" type="button" data-video-preview-replay>Смотреть ещё раз</button>
+</div>
+</template>
+<?php endif; ?>
 <?php endif; ?>
 <?php if ($c['chapters'] && $access): ?>
 <?php require __DIR__ . '/chat-modal.php'; ?>

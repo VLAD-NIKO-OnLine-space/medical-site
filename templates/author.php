@@ -19,9 +19,6 @@ $photo = is_file(__DIR__ . "/../public{$c['photo']['src']}-{$c['photo']['w'][0]}
 </div>
 <div class="author__info">
 <div class="author__heading">
-<?php if ($c['eyebrow'] !== ''): ?>
-<div class="eyebrow"><?= e($c['eyebrow']) ?></div>
-<?php endif; ?>
 <h2 class="section-title" id="author-title"><?= e(typo($c['title'])) ?><?php if ($c['title_accent'] !== ''): ?> <span class="text-accent"><?= e(typo($c['title_accent'])) ?></span><?php endif; ?></h2>
 </div>
 <div class="author__profile">

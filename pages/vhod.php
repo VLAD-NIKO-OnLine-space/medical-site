@@ -25,9 +25,6 @@ if (PHP_SAPI !== 'cli') { // при сборке в статику запрос�
 <section class="login" aria-labelledby="login-title">
 <div class="container login__grid">
 <div class="login__card">
-<?php if ($c['eyebrow'] !== ''): ?>
-<div class="eyebrow"><?= e($c['eyebrow']) ?></div>
-<?php endif; ?>
 <h1 class="login__title" id="login-title"><?= e(typo($c['title'])) ?><?php if ($c['title_accent'] !== ''): ?> <span class="text-accent"><?= e(typo($c['title_accent'])) ?></span><?php endif; ?></h1>
 <?php if ($c['lead'] !== ''): ?>
 <p class="login__lead"><?= nl2br(e(typo($c['lead'])), false) ?></p>

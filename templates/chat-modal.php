@@ -13,13 +13,9 @@ $page['scripts'][] = '/assets/js/chat.js';
 </div>
 <div class="chat-modal__list" data-chat-list aria-live="polite"></div>
 <form class="chat-modal__form" data-chat-form>
-<div class="chat-modal__fields">
-<label class="visually-hidden" for="chat-title-input">Главная мысль</label>
-<input class="chat-modal__input chat-modal__input--title" id="chat-title-input" name="title" type="text" maxlength="<?= CHAT_TITLE_MAX ?>" placeholder="Главная мысль (по желанию)" autocomplete="off">
 <label class="visually-hidden" for="chat-text">Комментарий</label>
-<textarea class="chat-modal__input" id="chat-text" name="text" rows="2" maxlength="<?= CHAT_MAX ?>" placeholder="Поделитесь опытом или задайте вопрос" required></textarea>
-</div>
-<button class="chat-modal__send" type="submit" aria-label="Отправить"><?= icon('send', '', 20) ?></button>
+<textarea class="chat-modal__input" id="chat-text" name="text" rows="4" maxlength="<?= CHAT_MAX ?>" placeholder="Поделитесь опытом или задайте вопрос" required></textarea>
+<button class="btn chat-modal__send" type="submit" disabled><?= icon('send', '', 18) ?>Отправить</button>
 </form>
 <p class="chat-modal__error" data-chat-error role="alert" hidden></p>
 <div class="chat-modal__auth" data-chat-auth hidden>

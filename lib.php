@@ -232,6 +232,15 @@ function video_embed(string $url): ?array
     return ['iframe', $url];
 }
 
+function chapter_full_video(array $chapter): ?array
+{
+    $url = $chapter['full_url'] ?? '';
+    if ($url === '' && $chapter['title'] === 'Вступление') {
+        $url = $chapter['video_url'] ?? '';
+    }
+    return video_embed($url);
+}
+
 function db(): PDO
 {
     static $pdo;
