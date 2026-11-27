@@ -7,6 +7,18 @@
 <?= $content ?>
 </main>
 <?php require __DIR__ . '/footer.php'; ?>
+<?php $cookieConsent = legal_consents()['cookie']; ?>
+<aside class="cookie-banner" aria-labelledby="cookie-banner-title" data-cookie-banner hidden>
+<div class="cookie-banner__content">
+<h2 id="cookie-banner-title"><span class="cookie-banner__icon"><?= icon('shield-check', '', 18) ?></span>Файлы cookie</h2>
+<p>Технические cookie нужны для работы сайта. Нажимая «Согласен», вы <a href="<?= e($cookieConsent['path']) ?>">даёте согласие</a> на использование аналитических cookie и обработку данных Яндекс.Метрикой для улучшения сайта. <a href="/konfidencialnost/#punkt-6">Больше о файлах cookie</a>.</p>
+</div>
+<div class="cookie-banner__actions">
+<button type="button" data-cookie-choice="accepted">Согласен</button>
+<button type="button" data-cookie-choice="necessary">Только необходимые</button>
+</div>
+</aside>
+<script type="module" src="<?= e(asset('/assets/js/cookie-consent.js')) ?>"></script>
 <?php /* окно видео — общее для первого экрана и фрагментов глав; название подставляет video.js */ ?>
 <dialog class="video-modal" data-video-modal aria-label="Видео">
 <button class="video-modal__close" type="button" data-video-close aria-label="Закрыть видео"><?= icon('x', '', 22) ?></button>

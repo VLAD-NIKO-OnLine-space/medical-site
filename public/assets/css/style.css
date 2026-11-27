@@ -3954,6 +3954,114 @@ button.cabinet__cover:focus-visible {
   margin-bottom: 0;
 }
 
+/* Уведомление о cookie */
+
+.cookie-banner {
+  --banner-gap: clamp(12px, 2vw, 24px);
+  --banner-left: max(var(--banner-gap), env(safe-area-inset-left));
+  --banner-right: max(var(--banner-gap), env(safe-area-inset-right));
+  --banner-bottom: max(var(--banner-gap), env(safe-area-inset-bottom));
+  --banner-padding: clamp(14px, 3.8vw, 21px);
+  position: fixed;
+  z-index: 90;
+  right: var(--banner-right);
+  bottom: var(--banner-bottom);
+  width: calc(100% - var(--banner-left) - var(--banner-right));
+  max-width: 468px;
+  max-height: calc(100vh - var(--banner-bottom) - var(--banner-gap));
+  max-height: calc(100dvh - var(--banner-bottom) - var(--banner-gap));
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid #d2e3e1;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(18, 51, 53, 0.14), 0 2px 6px rgba(18, 51, 53, 0.06);
+}
+
+.cookie-banner__content {
+  padding: var(--banner-padding) var(--banner-padding) 14px;
+}
+
+.cookie-banner h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.cookie-banner__icon {
+  display: grid;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 10px;
+  background: #e7f4f2;
+  color: #176b6e;
+}
+
+.cookie-banner p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.cookie-banner a {
+  color: #0d6264;
+  font-weight: 600;
+  text-decoration-color: #8ab7b4;
+  text-underline-offset: 2px;
+}
+
+.cookie-banner__actions {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 8px;
+  padding: 11px var(--banner-padding);
+  border-top: 1px solid #e0ecea;
+  background: #f4f9f8;
+}
+
+.cookie-banner__actions button {
+  min-height: 46px;
+  padding: 7px 8px;
+  border: 1px solid #b2cecb;
+  border-radius: 10px;
+  background: #fff;
+  color: #124b4d;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.cookie-banner__actions [data-cookie-choice="accepted"] {
+  border-color: transparent;
+  background: #0d6769;
+  color: #fff;
+}
+
+@media (hover: hover) {
+  .cookie-banner__actions button:hover {
+    background: #e9f4f2;
+  }
+
+  .cookie-banner__actions [data-cookie-choice="accepted"]:hover {
+    background: #0a5658;
+  }
+}
+
+.cookie-banner :is(button, a):focus-visible {
+  outline: 2px solid #0d6264;
+  outline-offset: 2px;
+}
+
 /* Подвал */
 
 /* белый на всю ширину экрана, прижат к низу без отступов */
