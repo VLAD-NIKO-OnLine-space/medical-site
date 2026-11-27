@@ -3,9 +3,12 @@
 <div class="container">
 <div class="footer__panel">
 <?php
-// колонки подвала берут ссылки из шапки и карточки доступа — в одном месте меняется везде
+// Ссылки из шапки, карточки доступа и страницы отдельных согласий.
 $nav = nav_items();
 $docs = content('access')['docs'];
+foreach (legal_consents() as $consentLink) {
+    $docs[] = ['label' => $consentLink['label'], 'href' => $consentLink['path']];
+}
 $login = content('header');
 ?>
 <div class="footer__top">
@@ -27,8 +30,8 @@ $login = content('header');
 <?php endif; ?>
 <?php if ($docs): ?>
 <nav class="footer__col" aria-labelledby="footer-docs-title">
-<p class="footer__col-title" id="footer-docs-title">Документы</p>
-<ul class="footer__links">
+<p class="footer__col-title" id="footer-docs-title">Правовая информация</p>
+<ul class="footer__links footer__links--docs">
 <?php foreach ($docs as $doc): ?>
 <li><a href="<?= e($doc['href']) ?>"><?= e($doc['label']) ?></a></li>
 <?php endforeach; ?>

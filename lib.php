@@ -39,6 +39,12 @@ function site(): array
     return $site ??= require __DIR__ . '/config.php';
 }
 
+function legal_consents(): array
+{
+    static $consents;
+    return $consents ??= require __DIR__ . '/content/legal-consents.php';
+}
+
 /** Типографика: неразрывный пробел перед тире и после коротких слов — они не повиснут на краю строки. */
 function typo(string $s): string
 {

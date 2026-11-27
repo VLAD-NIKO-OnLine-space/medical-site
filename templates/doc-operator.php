@@ -11,7 +11,7 @@ $operatorName = array_shift($operatorLines) ?? '';
 ?>
 <div class="doc__operator-row">
 <dt><?= document_inline($label . (isset($parts[1]) ? ':' : '')) ?></dt>
-<dd><?php if ($label === 'Телефон'): ?><a href="<?= e(tel_href($value)) ?>"><?= e(typo($value)) ?></a><?php else: ?><?= document_inline($value) ?><?php endif; ?></dd>
+<dd><?php if ($label === 'Телефон' && preg_match('/\d/', $value)): ?><a href="<?= e(tel_href($value)) ?>"><?= e(typo($value)) ?></a><?php else: ?><?= document_inline($value) ?><?php endif; ?></dd>
 </div>
 <?php endforeach; ?>
 </dl>
