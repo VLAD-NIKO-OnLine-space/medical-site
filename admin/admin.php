@@ -85,7 +85,7 @@ function validate_field(array $f, mixed $v, string $name, array &$errors): mixed
             return $v;
         default:
             $multiline = $f['type'] === 'textarea';
-            $clean = clean_text($v, $multiline ? 3000 : 300, $multiline);
+            $clean = clean_text($v, $f['max_length'] ?? ($multiline ? 3000 : 300), $multiline);
             if ($clean === null) {
                 $errors[$name] = 'Слишком длинный текст или недопустимые символы.';
                 return is_string($v) ? $v : '';

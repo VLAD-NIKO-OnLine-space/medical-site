@@ -63,7 +63,12 @@ $legal = array_filter([
 ], 'strlen');
 ?>
 <?php if ($legal): ?>
-<p class="footer__legal"><small><?= e(implode(' · ', $legal)) ?></small></p>
+<p class="footer__legal"><small>
+<?php foreach (array_values($legal) as $index => $item): ?>
+<?php if ($index > 0): ?><span class="footer__legal-separator" aria-hidden="true"> · </span><?php endif; ?>
+<span class="footer__legal-item"><?= e($item) ?></span>
+<?php endforeach; ?>
+</small></p>
 <?php endif; ?>
 </div>
 </div>

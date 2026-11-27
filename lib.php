@@ -70,19 +70,20 @@ function paragraphs(string $text, string $class = ''): string
 }
 
 /** Текст документа из админки: пустая строка — новый абзац, строки с «— » или «- » в начале — пункты списка. */
-function rich_text(string $text): string
+function rich_text(string $text, ?callable $format = null): string
 {
     $out = '';
+    $format ??= static fn(string $line): string => link_emails(e(typo($line)));
     foreach (preg_split('/\n\s*\n/', trim($text)) as $block) {
         $lines = preg_split('/\n/', trim($block));
         $para = [];
         $list = [];
-        $flush = function () use (&$para, &$list, &$out) {
+        $flush = function () use (&$para, &$list, &$out, $format) {
             if ($para) {
-                $out .= '<p>' . link_emails(implode('<br>', array_map(fn($l) => e(typo($l)), $para))) . "</p>\n";
+                $out .= '<p>' . implode('<br>', array_map($format, $para)) . "</p>\n";
             }
             if ($list) {
-                $out .= "<ul>\n" . implode('', array_map(fn($l) => '<li>' . link_emails(e(typo($l))) . "</li>\n", $list)) . "</ul>\n";
+                $out .= "<ul>\n" . implode('', array_map(fn($l) => '<li>' . $format($l) . "</li>\n", $list)) . "</ul>\n";
             }
             $para = $list = [];
         };
@@ -106,6 +107,56 @@ function rich_text(string $text): string
         $flush();
     }
     return $out;
+}
+
+function document_inline(string $text): string
+{
+    $parts = preg_split('~(https?://[^\s<>"\'()]*[^\s<>"\'().,;:!?])~iu', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+    foreach ($parts as $index => &$part) {
+        $part = $index % 2 === 1
+            ? '<a href="' . e($part) . '">' . e($part) . '</a>'
+            : link_emails(e(typo($part)));
+    }
+    unset($part);
+    return implode('', $parts);
+}
+
+function document_text(string $text): string
+{
+    $out = '';
+    foreach (preg_split('/\n\s*\n/', trim($text)) as $block) {
+        if (str_starts_with($block, '### ')) {
+            $out .= '<h3>' . document_inline(substr($block, 4)) . "</h3>\n";
+        } else {
+            $lines = explode("\n", $block);
+            if (str_starts_with($block, '| ') && preg_match('/^\|(?:\s*---\s*\|)+$/', $lines[1] ?? '')) {
+                $out .= document_table($lines);
+            } else {
+                $out .= rich_text($block, document_inline(...));
+            }
+        }
+    }
+    return $out;
+}
+
+function document_table(array $lines): string
+{
+    $cells = static fn(string $line): array => array_map('trim', explode('|', trim(trim($line), '|')));
+    $headings = $cells(array_shift($lines));
+    array_shift($lines); // Разделитель столбцов после заголовка.
+    $out = '<table class="doc__table"><thead><tr>';
+    foreach ($headings as $heading) {
+        $out .= '<th scope="col">' . document_inline($heading) . '</th>';
+    }
+    $out .= "</tr></thead>\n<tbody>\n";
+    foreach ($lines as $line) {
+        $out .= '<tr>';
+        foreach ($cells($line) as $cell) {
+            $out .= '<td>' . document_inline($cell) . '</td>';
+        }
+        $out .= "</tr>\n";
+    }
+    return $out . "</tbody></table>\n";
 }
 
 /** Реквизиты продавца из «Подвала» — для подстановки в документы вместо {seller}, {inn} и т. д.; пустое — «—». */
