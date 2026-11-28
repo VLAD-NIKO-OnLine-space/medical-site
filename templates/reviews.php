@@ -9,8 +9,9 @@ $page['scripts'][] = '/assets/js/reviews.js';
 $ratings = array_map(fn($item) => max(1, min(5, (int) $item['rating'])), $c['items']);
 $total = count($ratings);
 $positive = count(array_filter($ratings, fn($r) => $r >= 4));
+$critical = $total - $positive;
 $average = array_sum($ratings) / $total;
-$filters = ['all' => ['Все', $total], 'positive' => ['Положительные', $positive], 'critical' => ['С замечаниями', $total - $positive]];
+$filters = ['all' => ['Все', $total], 'positive' => ['Положительные', $positive], 'critical' => ['С замечаниями', $critical]];
 ?>
 <section class="reviews" id="otzyvy" aria-labelledby="reviews-title">
 <div class="container">
@@ -42,11 +43,13 @@ $filters = ['all' => ['Все', $total], 'positive' => ['Положительн�
 </span>
 <span class="reviews__score-count"><?= $total ?> <?= plural($total, ['отзыв', 'отзыва', 'отзывов']) ?></span>
 </p>
+<?php if ($critical > 0): ?>
 <div class="reviews__filter" role="group" aria-label="Показать отзывы">
 <?php foreach ($filters as $key => [$label, $count]): ?>
 <button type="button" class="reviews__filter-btn" data-reviews-filter="<?= $key ?>" aria-pressed="<?= $key === 'all' ? 'true' : 'false' ?>"><?= $label ?> <span><?= $count ?></span></button>
 <?php endforeach; ?>
 </div>
+<?php endif; ?>
 </div>
 <div class="reviews__slider swiper" data-reviews>
 <div class="swiper-wrapper">
